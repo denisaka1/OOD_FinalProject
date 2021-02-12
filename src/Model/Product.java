@@ -1,6 +1,7 @@
 package Model;
 
 import Exceptions.IllegalInputException;
+import Model.observer.Customer;
 
 import java.io.Serializable;
 
@@ -47,7 +48,7 @@ public class Product implements Serializable {
         return wholesalePrice;
     }
 
-    protected Customer getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 

@@ -2,14 +2,11 @@ package Model.command;
 
 import Model.Product;
 
-import java.io.*;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class Store implements Iterable<Product>{
-
 
     public final static int ASC = 0;
     public final static int DESC = 1;
@@ -67,6 +64,9 @@ public class Store implements Iterable<Product>{
     public void removeProductFromFile(String productName) {
 
     }
+
+
+
 
     @Override
     public Iterator<Product> iterator() {
