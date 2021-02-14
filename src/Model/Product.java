@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Product implements Serializable {
 
     // 0 - default
-
+    private static final long serialVersionUID = 7526472295622776147L;
     private String serialNumber; // makat
     private String productName;
     private int retailPrice; // for customer
