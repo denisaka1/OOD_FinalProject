@@ -25,7 +25,6 @@ public class StoreCommand {
                 sender.attach(customer);
         }
 
-        //todo: add to binary file
     }
 
     private Product getProduct(String serialNumber) {
@@ -51,8 +50,7 @@ public class StoreCommand {
         if(previous != null) {
             store.setStore(previous);
             previous = null;
-            // todo: remove last item from binary file
-
+            store.writeAllFromMapToFile();
         }
 
     }

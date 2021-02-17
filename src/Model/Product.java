@@ -3,12 +3,12 @@ package Model;
 import Exceptions.IllegalInputException;
 import Model.observer.Customer;
 
-import java.io.Serializable;
+import java.io.*;
 
 public class Product implements Serializable {
 
     // 0 - default
-    private static final long serialVersionUID = 7526472295622776147L;
+    private static final long serialVersionUID = 7526472295622776141L;
     private String serialNumber; // makat
     private String productName;
     private int retailPrice; // for customer
@@ -20,9 +20,13 @@ public class Product implements Serializable {
         this(serialNumber, null, 0, 0, null);
     }
 
-    private Product(String serialNumber, String name,
-                   int retailPrice, int wholesalePrice,
-                   Customer customer) {
+    private Product(
+            String serialNumber,
+            String name,
+            int retailPrice,
+            int wholesalePrice,
+            Customer customer
+    ) {
         this.serialNumber = serialNumber;
         setSerialNumber(serialNumber);
         setRetailPrice(retailPrice);
@@ -50,6 +54,39 @@ public class Product implements Serializable {
 
     public Customer getCustomer() {
         return customer;
+    }
+
+    public static Product deserialize(byte[] byteArray)
+            throws IOException,
+            ClassNotFoundException {
+
+        /*
+        read size of the Product Object
+        read the Product Object
+         */
+
+        ObjectInputStream ois = new ObjectInputStream(
+                new ByteArrayInputStream(byteArray)
+        );
+//        int size = ois.readInt();
+        Product temp = (Product)ois.readObject();
+        ois.close();
+
+        return temp;
+    }
+
+    public static byte[] serialize(Product product)
+            throws IOException {
+        try (
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos)
+        ){
+
+            oos.writeObject(product);
+            oos.flush();
+
+            return baos.toByteArray();
+        }
     }
 
     /************ Set Functions ***********/

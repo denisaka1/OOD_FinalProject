@@ -1,12 +1,14 @@
 package Model.command;
 
 import Model.Product;
+import Model.iterator.FileHandler;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Store implements Iterable<Product>{
+public class Store{
 
     public final static int ASC = 0;
     public final static int DESC = 1;
@@ -15,11 +17,13 @@ public class Store implements Iterable<Product>{
     private final static int DEFAULT = -1;
 
     private Map<String, Product> allProducts;
+    private FileHandler binaryFileManager;
     private int saveAndPrintAs;
-    private String fileName = "products.txt";
+    private String fileName = "products.txt"; // todo: make const
 
-    public Store() {
-        allProducts = new HashMap<String, Product>();
+    public Store(){
+        allProducts = new HashMap<>();
+        binaryFileManager = new FileHandler(fileName);
         saveAndPrintAs = DEFAULT;
     }
 
@@ -28,8 +32,11 @@ public class Store implements Iterable<Product>{
 
         if(allProducts.containsKey(serialNumber)){
             allProducts.replace(serialNumber, product);
-        }else
+            binaryFileManager.replaceProductBySerialNumber(serialNumber, product);
+        }else{
             allProducts.put(product.getSerialNumber(), product);
+            binaryFileManager.writeProduct(product);
+        }
     }
 
     protected Product getProduct(String serialNumber) {
@@ -49,6 +56,17 @@ public class Store implements Iterable<Product>{
         return new Memento(allProducts);
     }
 
+    protected void writeAllFromMapToFile() {
+        binaryFileManager.clearFile();
+        for(Product product : allProducts.values()){
+            binaryFileManager.writeProduct(product);
+        }
+    }
+
+    public boolean removeProductFromFile(String serialNumber){
+        return binaryFileManager.removeProduct(serialNumber);
+    }
+
     protected static class Memento {
         private Map<String, Product> products;
 
@@ -61,51 +79,44 @@ public class Store implements Iterable<Product>{
         }
     }
 
-    public void removeProductFromFile(String productName) {
 
-    }
-
-
-
-
-    @Override
+/*    @Override
     public Iterator<Product> iterator() {
-        return new BinaryFileIterator();
+        return new BinaryFileIterator(fileName);
     }
 
     // TODO
-    private class BinaryFileIterator implements Iterator<Product> {
+    private class BinaryFileIterator implements Iterator<Product>{
+        private ObjectInputStream read;
+        private ObjectOutputStream write;
 
-        private int cur = 0; // next will return the element at this index
-        private int last = -1; // element to be removed
+        public BinaryFileIterator(String fileName) {
+            try {
+                read = new ObjectInputStream(new FileInputStream(fileName));
+                write = new ObjectOutputStream(new FileOutputStream(fileName));
 
 
-        public BinaryFileIterator() {
-
+            } catch (IOException e) {
+                // todo: info
+                e.printStackTrace();
+            }
         }
 
         @Override
         public boolean hasNext() {
-            if(cur < last) {
-
+            try {
+                if(read.available() != 0)
+                    return true;
+            } catch (IOException e) {
+                // handle
+                e.printStackTrace();
             }
-            return cur < last;
+            return false;
         }
 
         @Override
         public Product next() {
-            if(!hasNext())
-                return null;
             return null;
         }
-
-        @Override
-        public void remove() {
-
-        }
-
-        public String getCurrentString() {
-            return null;
-        }
-    }
+    }*/
 }
