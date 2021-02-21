@@ -9,30 +9,24 @@ public class Product implements Serializable {
 
     // 0 - default
     private static final long serialVersionUID = 7526472295622776141L;
-    private String serialNumber; // makat
+    private String serialNumber; // SKU
     private String productName;
-    private int retailPrice; // for customer
-    private int wholesalePrice; // for store
+    private double retailPrice; // for customer
+    private double wholesalePrice; // for store
 
     private Customer customer;
 
-    public Product (String serialNumber) {
-        this(serialNumber, null, 0, 0, null);
-    }
-
-    private Product(
-            String serialNumber,
-            String name,
-            int retailPrice,
-            int wholesalePrice,
-            Customer customer
-    ) {
+    public Product(String serialNumber, String name, double retailPrice, double wholesalePrice, Customer customer) {
         this.serialNumber = serialNumber;
         setSerialNumber(serialNumber);
         setRetailPrice(retailPrice);
         setWholesalePrice(wholesalePrice);
         this.productName = name;
         this.customer = customer;
+    }
+
+    public Product(String serialNumber) {
+        this(serialNumber, null, 0, 0, null);
     }
 
     /************ Get Functions ***********/
@@ -44,11 +38,11 @@ public class Product implements Serializable {
         return productName;
     }
 
-    protected int getRetailPrice() {
+    protected double getRetailPrice() {
         return retailPrice;
     }
 
-    protected int getWholesalePrice() {
+    protected double getWholesalePrice() {
         return wholesalePrice;
     }
 
@@ -57,17 +51,13 @@ public class Product implements Serializable {
     }
 
     public static Product deserialize(byte[] byteArray)
-            throws IOException,
+        throws IOException,
             ClassNotFoundException {
-
-        /*
-        read size of the Product Object
-        read the Product Object
-         */
-
-        ObjectInputStream ois = new ObjectInputStream(
-                new ByteArrayInputStream(byteArray)
-        );
+            /*
+            read size of the Product Object
+            read the Product Object
+             */
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(byteArray));
 //        int size = ois.readInt();
         Product temp = (Product)ois.readObject();
         ois.close();
@@ -99,11 +89,22 @@ public class Product implements Serializable {
         }
     }
 
-    private void setRetailPrice(int retailPrice) {
+    private void setRetailPrice(double retailPrice) {
         this.retailPrice = Math.max(retailPrice, 0);
     }
 
-    private void setWholesalePrice(int wholesalePrice) {
+    private void setWholesalePrice(double wholesalePrice) {
         this.wholesalePrice = Math.max(wholesalePrice, 0);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "serialNumber='" + serialNumber + '\'' +
+                ", productName='" + productName + '\'' +
+                ", retailPrice=" + retailPrice +
+                ", wholesalePrice=" + wholesalePrice +
+                ", customer=" + customer +
+                '}';
     }
 }

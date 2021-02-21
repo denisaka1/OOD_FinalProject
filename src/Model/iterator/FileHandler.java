@@ -4,9 +4,7 @@ import Exceptions.IllegalInputException;
 import Model.Product;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class FileHandler implements Iterable<Product> {
 
@@ -30,7 +28,6 @@ public class FileHandler implements Iterable<Product> {
             e.printStackTrace();
             // todo: handle IOException
         }
-
     }
 
     public boolean removeProduct(String serialNumber) {
@@ -55,13 +52,11 @@ public class FileHandler implements Iterable<Product> {
 /*    public void remove(String serialNumber) throws IOException {
         Iterator<Product> itr = iterator();
         long pos;
-
         while(itr.hasNext()) {
             pos = raf.getFilePointer();
             Product temp = itr.next();
             if(serialNumber.equals(temp.getSerialNumber())) {
                 byte[] data = new byte[(int) (raf.length() - (serialNumber.length()))]; // rest of the file
-
                 raf.read(data); // read rest of the file
                 raf.setLength(pos);
                 raf.write(data);
@@ -99,6 +94,7 @@ public class FileHandler implements Iterable<Product> {
         }
     }
 
+    // todo: There is no need
     public void replaceProductBySerialNumber(String serialNumber, Product product) {
         // todo: handle null itr.next()
 
@@ -177,7 +173,6 @@ public class FileHandler implements Iterable<Product> {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
 
             return null;
         }

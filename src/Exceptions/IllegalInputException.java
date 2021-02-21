@@ -2,7 +2,7 @@ package Exceptions;
 
 import javafx.scene.control.Alert;
 
-public class IllegalInputException extends Exception{
+public class IllegalInputException extends Exception {
 
     private String name;
     private Alert alert;

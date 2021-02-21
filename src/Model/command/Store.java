@@ -3,12 +3,11 @@ package Model.command;
 import Model.Product;
 import Model.iterator.FileHandler;
 
-import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-public class Store{
+public class Store {
 
     public final static int ASC = 0;
     public final static int DESC = 1;
@@ -19,9 +18,9 @@ public class Store{
     private Map<String, Product> allProducts;
     private FileHandler binaryFileManager;
     private int saveAndPrintAs;
-    private String fileName = "products.txt"; // todo: make const
+    private final String fileName = "data/products.txt";
 
-    public Store(){
+    public Store() {
         allProducts = new HashMap<>();
         binaryFileManager = new FileHandler(fileName);
         saveAndPrintAs = DEFAULT;
@@ -30,7 +29,7 @@ public class Store{
     protected void addProduct(Product product){
         String serialNumber = product.getSerialNumber();
 
-        if(allProducts.containsKey(serialNumber)){
+        if(allProducts.containsKey(serialNumber)){ // todo: replace or error
             allProducts.replace(serialNumber, product);
             binaryFileManager.replaceProductBySerialNumber(serialNumber, product);
         }else{
@@ -48,13 +47,13 @@ public class Store{
             saveAndPrintAs = order;
     }
 
-    protected void setStore(Memento m) {
-        allProducts = new HashMap<>(m.getProducts());
-    }
+//    protected void setStore(Memento m) {
+//        allProducts = new HashMap<>(m.getProducts());
+//    }
 
-    protected Memento createMemento() {
-        return new Memento(allProducts);
-    }
+//    protected Memento createMemento() {
+//        return new Memento(allProducts);
+//    }
 
     protected void writeAllFromMapToFile() {
         binaryFileManager.clearFile();
@@ -63,11 +62,20 @@ public class Store{
         }
     }
 
+    public ArrayList<Product> getProductList() {
+        ArrayList<Product> list = new ArrayList<>();
+
+        for (Product p : allProducts.values())
+            list.add(p);
+
+        return list;
+    }
+
     public boolean removeProductFromFile(String serialNumber){
         return binaryFileManager.removeProduct(serialNumber);
     }
 
-    protected static class Memento {
+/*    protected static class Memento {
         private Map<String, Product> products;
 
         private Memento(Map<String, Product> products){
@@ -77,31 +85,26 @@ public class Store{
         private Map<String, Product> getProducts() {
             return products;
         }
-    }
+    }*/
 
 
 /*    @Override
     public Iterator<Product> iterator() {
         return new BinaryFileIterator(fileName);
     }
-
     // TODO
     private class BinaryFileIterator implements Iterator<Product>{
         private ObjectInputStream read;
         private ObjectOutputStream write;
-
         public BinaryFileIterator(String fileName) {
             try {
                 read = new ObjectInputStream(new FileInputStream(fileName));
                 write = new ObjectOutputStream(new FileOutputStream(fileName));
-
-
             } catch (IOException e) {
                 // todo: info
                 e.printStackTrace();
             }
         }
-
         @Override
         public boolean hasNext() {
             try {
@@ -113,7 +116,6 @@ public class Store{
             }
             return false;
         }
-
         @Override
         public Product next() {
             return null;

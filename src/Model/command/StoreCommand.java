@@ -1,5 +1,7 @@
 package Model.command;
 
+import Model.memento.Caretaker;
+import Model.memento.Originator;
 import Model.observer.Customer;
 import Model.Product;
 import Model.observer.Sender;
@@ -9,13 +11,27 @@ import java.util.ArrayList;
 public class StoreCommand {
 
     private Store store = new Store();
-    private Store.Memento previous;
+//    private Store.Memento previous;
+    private int currProduct;
+    private Caretaker caretaker;
+    private Originator originator;
     private Sender sender = Sender.getInstance();
     private ArrayList<String> names;
 
+    public StoreCommand() {
+        caretaker = new Caretaker();
+        originator = new Originator();
+        currProduct = 0;
+    }
+
     private void addProduct(Product product) {
         Customer customer;
-        previous = store.createMemento();
+//        previous = store.createMemento();
+
+        originator.set(product); // Set the value for the current Memento
+        caretaker.addMemento(originator.storeInMemento()); // Add new product to the ArrayList
+        currProduct++;
+
         store.addProduct(product);
 
         customer = product.getCustomer();
@@ -24,11 +40,14 @@ public class StoreCommand {
             if(customer.getEventOnSales())
                 sender.attach(customer);
         }
-
     }
 
     private Product getProduct(String serialNumber) {
         return store.getProduct(serialNumber);
+    }
+
+    private ArrayList<Product> getAllProducts() {
+        return store.getProductList();
     }
 
     /*
@@ -40,19 +59,19 @@ public class StoreCommand {
         store.setSaveAndPrintAs(order);
     }
 
-    private void showProduct(String serialNumber) {
-        // show product by its serialNumber
-        // todo
-
-    }
-
     private void undo() {
-        if(previous != null) {
-            store.setStore(previous);
-            previous = null;
-            store.writeAllFromMapToFile();
+        if (currProduct >= 1) {
+            currProduct--;
+
+            Product lastAddedProduct = originator.restoreFromMemento(caretaker.getMemento(currProduct));
+            store.removeProductFromFile(lastAddedProduct.getSerialNumber());
         }
 
+//        if(previous != null) {
+//            store.setStore(previous);
+////            previous = null;
+//            store.writeAllFromMapToFile();
+//        }
     }
 
     private void sendSaleMessage(String msg) {
@@ -69,12 +88,12 @@ public class StoreCommand {
         return getProduct(serialNumber);
     }
 
-    public void saveProductByOrderInStore(int order) {
-        saveProductByOrder(order);
+    public ArrayList<Product> getAllProductsFromStore(){
+        return getAllProducts();
     }
 
-    public void showProductInStore(String serialNumber) {
-        showProduct(serialNumber);
+    public void saveProductByOrderInStore(int order) {
+        saveProductByOrder(order);
     }
 
     public void undoStore() {
