@@ -4,22 +4,22 @@ import Exceptions.IllegalInputException;
 import Model.Product;
 
 import java.io.*;
-import java.util.Iterator;
+import java.util.*;
 
 public class FileHandler implements Iterable<Product> {
 
-    private long writePos;
+//    private long writePos;
     private long readPos;
     private long fileSize;
     private RandomAccessFile raf;
-    String filename;
+//    private String filename;
 
     public FileHandler(String fileName){
-        filename = fileName;
+//        filename = fileName;
         try {
-            raf = new RandomAccessFile(filename, "rw");
-            writePos = raf.getFilePointer();
-            readPos = writePos;
+            raf = new RandomAccessFile(fileName, "rw");
+//            writePos = raf.getFilePointer();
+            readPos = raf.getFilePointer();
             fileSize = raf.length();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -44,25 +44,24 @@ public class FileHandler implements Iterable<Product> {
         return isRemoved;
     }
 
+    public LinkedHashMap<String, Product> readProducts() {
+
+        Iterator<Product> itr = iterator();
+        LinkedHashMap<String, Product> result = new LinkedHashMap<>();
+        Product temp;
+
+        while(itr.hasNext()) {
+            temp = itr.next();
+            result.put(temp.getSerialNumber(), temp);
+        }
+
+        return result;
+    }
+
     @Override
     public Iterator<Product> iterator() {
         return new BinaryFileIterator();
     }
-
-/*    public void remove(String serialNumber) throws IOException {
-        Iterator<Product> itr = iterator();
-        long pos;
-        while(itr.hasNext()) {
-            pos = raf.getFilePointer();
-            Product temp = itr.next();
-            if(serialNumber.equals(temp.getSerialNumber())) {
-                byte[] data = new byte[(int) (raf.length() - (serialNumber.length()))]; // rest of the file
-                raf.read(data); // read rest of the file
-                raf.setLength(pos);
-                raf.write(data);
-            }
-        }
-    }*/
 
     public void writeProduct(Product product){
         byte[] temp;
@@ -71,12 +70,14 @@ public class FileHandler implements Iterable<Product> {
 
             int productByteLength = temp.length;
 
-            raf.seek(writePos);
+//            raf.seek(writePos);
+            raf.seek(fileSize);
             raf.writeInt(productByteLength);
             raf.write(temp);
 
             fileSize = raf.length(); // resize
-            writePos = raf.getFilePointer(); // resize
+//            writePos = raf.getFilePointer(); // resize
+
         } catch (IOException e) {
             // todo: handle exception
             e.printStackTrace();
@@ -86,7 +87,7 @@ public class FileHandler implements Iterable<Product> {
     public void clearFile() {
         try {
             raf.setLength(0);
-            writePos = 0;
+//            writePos = 0;
             readPos = 0;
             fileSize = 0;
         } catch (IOException e) {
@@ -99,17 +100,48 @@ public class FileHandler implements Iterable<Product> {
         // todo: handle null itr.next()
 
         Iterator<Product> itr = iterator();
+        long prev;
+        long curr;
+        readPos = 0;
         while(itr.hasNext()){
-            if(serialNumber.equals(itr.next().getSerialNumber())) {
-                itr.remove();
-                writeProduct(product);
-                break;
+            try {
+                prev = readPos;
+                if(serialNumber.equals(itr.next().getSerialNumber())) {
+                    curr = raf.getFilePointer();
+
+                    byte[] byteProd = Product.serialize(product);
+                    int byteProdInt = byteProd.length;
+
+                    byte[] restOfData = new byte[(int) (fileSize -
+                            (curr)
+                    )];
+
+                    raf.read(restOfData); // read rest of data
+
+                    raf.seek(prev); // move to prev
+
+                    // write new prod
+                    raf.writeInt(byteProdInt);
+                    raf.write(byteProd);
+
+                    // write rest of data
+                    raf.write(restOfData);
+
+
+//                    writePos = raf.getFilePointer();
+                    fileSize = raf.getFilePointer();
+
+                    break; // todo: add boolean
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
     private class BinaryFileIterator implements Iterator<Product> {
-        long read = readPos;
+        long read = 0;
 
         @Override
         public boolean hasNext() {
@@ -139,10 +171,11 @@ public class FileHandler implements Iterable<Product> {
                     raf.write(data);
 
                     read = currentReadPos;
+                    readPos = read;
                     fileSize = raf.length();
 
-                    if(writePos > fileSize)
-                        writePos = fileSize;
+//                    if(writePos > fileSize)
+//                        writePos = fileSize;
 
                 } catch (IOException e) {
                     // todo: error in removing
@@ -153,28 +186,31 @@ public class FileHandler implements Iterable<Product> {
 
         @Override
         public Product next() {
+            Product result = null; // todo: indicates to print message to user
             if(!hasNext()) {
                 new IllegalInputException("You are in the end of the iterator!")
                         .showErrorMessage();
-                return null; // todo: indicates to print message to user
+            }
+            else{
+                try {
+                    raf.seek(read);
+                    int byteSize = raf.readInt();
+                    byte[] arr = new byte[byteSize];
+                    raf.read(arr);
+                    Product product = Product.deserialize(arr);
+//                read = raf.getFilePointer() + 1;
+                    read = raf.getFilePointer();
+                    readPos = read;
+
+                    result = product;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
 
-            try {
-                raf.seek(read);
-                int byteSize = raf.readInt();
-                byte[] arr = new byte[byteSize];
-
-                Product product = Product.deserialize(arr);
-                read = raf.getFilePointer() + 1;
-
-                return product;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+            return result;
         }
     }
 }

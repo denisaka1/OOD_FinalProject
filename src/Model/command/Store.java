@@ -1,41 +1,60 @@
 package Model.command;
 
 import Model.Product;
+import Model.comparators.StringAscComparator;
 import Model.iterator.FileHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Store {
 
     public final static int ASC = 0;
     public final static int DESC = 1;
-    public final static int BY_INSERT = 2;
-
-    private final static int DEFAULT = -1;
+    public final static int DEFAULT = 2;
 
     private Map<String, Product> allProducts;
     private FileHandler binaryFileManager;
     private int saveAndPrintAs;
-    private final String fileName = "data/products.txt";
+//    private final String fileName = "data/products.txt";
 
-    public Store() {
-        allProducts = new HashMap<>();
-        binaryFileManager = new FileHandler(fileName);
+/*    public Store() {
+//        allProducts = new HashMap<>();
+//        binaryFileManager = new FileHandler(fileName);
         saveAndPrintAs = DEFAULT;
+    }*/
+
+    public Store(String filename) {
+//        this();
+        saveAndPrintAs = DEFAULT;
+        binaryFileManager = new FileHandler(filename);
+        readAllFromFile();
+        allProducts = createMap();
     }
 
-    protected void addProduct(Product product){
-        String serialNumber = product.getSerialNumber();
+    private void readAllFromFile() {
+        allProducts = binaryFileManager.readProducts();
+    }
 
-        if(allProducts.containsKey(serialNumber)){ // todo: replace or error
+    protected boolean addProduct(Product product){
+        // todo: add boolean for msg
+        String serialNumber = product.getSerialNumber();
+        boolean isReplaced = false;
+
+        if(allProducts.containsKey(serialNumber)){
+            isReplaced = true;
             allProducts.replace(serialNumber, product);
             binaryFileManager.replaceProductBySerialNumber(serialNumber, product);
+
         }else{
             allProducts.put(product.getSerialNumber(), product);
             binaryFileManager.writeProduct(product);
         }
+
+        return isReplaced;
+    }
+
+    protected Map<String, Product> getCurrentMap() {
+        return allProducts;
     }
 
     protected Product getProduct(String serialNumber) {
@@ -43,17 +62,48 @@ public class Store {
     }
 
     protected void setSaveAndPrintAs(int order) {
-        if(saveAndPrintAs == DEFAULT)
+        if(saveAndPrintAs == DEFAULT) {
             saveAndPrintAs = order;
+
+            allProducts = createMap();
+        }
     }
 
-//    protected void setStore(Memento m) {
-//        allProducts = new HashMap<>(m.getProducts());
-//    }
+    private Comparator<String> getComparatorByOrder(int order) {
 
-//    protected Memento createMemento() {
-//        return new Memento(allProducts);
-//    }
+        StringAscComparator comparator = new StringAscComparator();
+
+        if(order == ASC)
+            return comparator;
+
+        return comparator.reversed();
+    }
+
+    private Map<String, Product> createMap() {
+        // also used to clone the current Map
+        Map<String, Product> currentState;
+
+        switch(saveAndPrintAs){
+            case ASC:
+            case DESC:
+                currentState = new TreeMap<>(getComparatorByOrder(saveAndPrintAs));
+                currentState.putAll(allProducts);
+                break;
+            default:
+                currentState = new LinkedHashMap<>(allProducts);
+                break;
+        }
+
+        return currentState;
+    }
+
+    protected void setStore(Memento m) {
+        allProducts = new LinkedHashMap<>(m.getProducts());
+    }
+
+    protected Memento createMemento() {
+        return new Memento(createMap());
+    }
 
     protected void writeAllFromMapToFile() {
         binaryFileManager.clearFile();
@@ -75,8 +125,8 @@ public class Store {
         return binaryFileManager.removeProduct(serialNumber);
     }
 
-/*    protected static class Memento {
-        private Map<String, Product> products;
+    protected static class Memento {
+        private final Map<String, Product> products;
 
         private Memento(Map<String, Product> products){
             this.products = products;
@@ -85,40 +135,5 @@ public class Store {
         private Map<String, Product> getProducts() {
             return products;
         }
-    }*/
-
-
-/*    @Override
-    public Iterator<Product> iterator() {
-        return new BinaryFileIterator(fileName);
     }
-    // TODO
-    private class BinaryFileIterator implements Iterator<Product>{
-        private ObjectInputStream read;
-        private ObjectOutputStream write;
-        public BinaryFileIterator(String fileName) {
-            try {
-                read = new ObjectInputStream(new FileInputStream(fileName));
-                write = new ObjectOutputStream(new FileOutputStream(fileName));
-            } catch (IOException e) {
-                // todo: info
-                e.printStackTrace();
-            }
-        }
-        @Override
-        public boolean hasNext() {
-            try {
-                if(read.available() != 0)
-                    return true;
-            } catch (IOException e) {
-                // handle
-                e.printStackTrace();
-            }
-            return false;
-        }
-        @Override
-        public Product next() {
-            return null;
-        }
-    }*/
 }

@@ -1,7 +1,7 @@
 package Model.command;
 
-import Model.memento.Caretaker;
-import Model.memento.Originator;
+//import Model.memento.Caretaker;
+//import Model.memento.Originator;
 import Model.observer.Customer;
 import Model.Product;
 import Model.observer.Sender;
@@ -10,27 +10,30 @@ import java.util.ArrayList;
 
 public class StoreCommand {
 
-    private Store store = new Store();
-//    private Store.Memento previous;
-    private int currProduct;
-    private Caretaker caretaker;
-    private Originator originator;
+    private Store store;
+    private Store.Memento previous;
+//    private int currProduct;
+//    private Caretaker caretaker;
+//    private Originator originator;
     private Sender sender = Sender.getInstance();
     private ArrayList<String> names;
 
-    public StoreCommand() {
-        caretaker = new Caretaker();
-        originator = new Originator();
-        currProduct = 0;
+    public StoreCommand(String filename) {
+
+        store = new Store(filename);
+
+//        caretaker = new Caretaker();
+//        originator = new Originator();
+//        currProduct = 0;
     }
 
     private void addProduct(Product product) {
         Customer customer;
-//        previous = store.createMemento();
+        previous = store.createMemento();
 
-        originator.set(product); // Set the value for the current Memento
-        caretaker.addMemento(originator.storeInMemento()); // Add new product to the ArrayList
-        currProduct++;
+//        originator.set(product); // Set the value for the current Memento
+//        caretaker.addMemento(originator.storeInMemento()); // Add new product to the ArrayList
+//        currProduct++;
 
         store.addProduct(product);
 
@@ -53,25 +56,28 @@ public class StoreCommand {
     /*
         ASC - 0
         DESC - 1
-        ByInsert - 2
+        ByInsert(DEFAULT) - 2
     */
     private void saveProductByOrder(int order){
         store.setSaveAndPrintAs(order);
     }
 
     private void undo() {
-        if (currProduct >= 1) {
+/*        if (currProduct >= 1) {
             currProduct--;
 
             Product lastAddedProduct = originator.restoreFromMemento(caretaker.getMemento(currProduct));
             store.removeProductFromFile(lastAddedProduct.getSerialNumber());
-        }
+        }*/
 
-//        if(previous != null) {
-//            store.setStore(previous);
-////            previous = null;
-//            store.writeAllFromMapToFile();
-//        }
+        store.setStore(previous);
+        store.writeAllFromMapToFile();
+
+/*        if(previous != null) {
+            store.setStore(previous);
+//            previous = null;
+            store.writeAllFromMapToFile();
+        }*/
     }
 
     private void sendSaleMessage(String msg) {
