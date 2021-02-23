@@ -19,41 +19,24 @@ public class SaleController extends SecondaryWindowController {
     }
 
     private void eventSendButton() {
-        EventHandler<ActionEvent> eventForSendButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
+        EventHandler<ActionEvent> eventForSendButton = event -> {
 
-                storeCommand.sendSaleMessageToAllCustomers(saleView.getMsg());
-                ArrayList<String> names = storeCommand.getAllCustomerSalesNames();
+            storeCommand.sendSaleMessageToAllCustomers(saleView.getMsg());
+            ArrayList<String> names = storeCommand.getAllCustomerSalesNames();
 
-                Thread thread = new Thread(new Runnable() {
-                    int index = 0;
-
-                    @Override
-                    public void run() {
-                        Runnable updater = new Runnable() {
-                            @Override
-                            public void run() {
-                                saleView.addResponse(names.get(index));
-                                index++;
-                            }
-                        };
-
-                        while (index < names.size() - 1) {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-
-                            } catch (Exception e) {
-                                System.out.println(e);
-                            }
-
-                            Platform.runLater(updater);
-                        }
+            new Thread(() ->{
+                for(String name: names){
+                    Platform.runLater(()->{
+                        saleView.addResponse(name);
+                    });
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                });
-                thread.setDaemon(true); // a low priority thread
-                thread.start();
-            }
+                }
+            }).start();
+
         };
         saleView.addEventForSendButton(eventForSendButton);
     }

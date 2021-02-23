@@ -1,6 +1,5 @@
 package View;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -54,8 +53,8 @@ public class HomeScreen extends MainButtons {
         dialogButton = new Button("Choose");
 
         dialogVBox = new VBox(new Text("Order Product By"), dialogCB, dialogButton);
-        dialogVBox.setMargin(dialogCB, new Insets(10));
-        dialogVBox.setMargin(dialogButton, new Insets(5));
+        VBox.setMargin(dialogCB, new Insets(10));
+        VBox.setMargin(dialogButton, new Insets(5));
         dialogVBox.setAlignment(Pos.CENTER);
         dialogVBox.setPadding(new Insets(30));
 

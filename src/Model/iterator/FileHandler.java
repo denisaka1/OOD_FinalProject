@@ -33,9 +33,11 @@ public class FileHandler implements Iterable<Product> {
         // todo: handle null itr.next()
         Iterator<Product> itr = iterator();
         boolean isRemoved = false;
+        Product product;
 
-        while(itr.hasNext()) {
-            if(serialNumber.equals(itr.next().getSerialNumber())) {
+        while(itr.hasNext() && !isRemoved) {
+            product = itr.next();
+            if(serialNumber.equals(product.getSerialNumber())) {
                 itr.remove();
                 isRemoved = true;
             }
@@ -141,6 +143,7 @@ public class FileHandler implements Iterable<Product> {
 
     private class BinaryFileIterator implements Iterator<Product> {
         long read = 0;
+        long prevRead;
 
         @Override
         public boolean hasNext() {
@@ -152,26 +155,35 @@ public class FileHandler implements Iterable<Product> {
 //            if (fileSize == read && fileSize > 0)
 //                clearFile();
 //            else if (fileSize <= read)
-            if (fileSize < read)
+            if(prevRead == read)
+                new IllegalInputException("Can't remove twice the same object!")
+                        .showErrorMessage();
+            else if (fileSize < read)
                 new IllegalInputException("Can't remove from an empty file!")
                         .showErrorMessage();
             else {
-                long currentReadPos = read; // save for later
+//                long currentReadPos = read; // save for later
 
                 try {
-                    raf.seek(read);
+//                    raf.seek(read);
+                    raf.seek(prevRead);
                     int sizeProductByteArr = raf.readInt();
 
                     // rest of file except for a product
+                    /*byte[] data = new byte[(int) (fileSize -
+                            (raf.getFilePointer() + sizeProductByteArr)
+                    )];*/
                     byte[] data = new byte[(int) (fileSize -
                             (raf.getFilePointer() + sizeProductByteArr)
                     )];
 
                     raf.read(data);
-                    raf.setLength(currentReadPos);
+//                    raf.setLength(currentReadPos);
+                    raf.setLength(prevRead);
                     raf.write(data);
 
-                    read = currentReadPos;
+//                    read = currentReadPos;
+                    read = prevRead;
                     readPos = read;
                     fileSize = raf.length();
 
@@ -194,12 +206,13 @@ public class FileHandler implements Iterable<Product> {
             }
             else{
                 try {
+                    prevRead = read;
                     raf.seek(read);
                     int byteSize = raf.readInt();
                     byte[] arr = new byte[byteSize];
                     raf.read(arr);
                     Product product = Product.deserialize(arr);
-//                read = raf.getFilePointer() + 1;
+//                    read = raf.getFilePointer() + 4;
                     read = raf.getFilePointer();
                     readPos = read;
 

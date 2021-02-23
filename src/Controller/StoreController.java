@@ -30,56 +30,46 @@ public class StoreController {
     }
 
     private void eventOrderButton() {
-        EventHandler<ActionEvent> eventForOrderButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                storeCommand.setOrderToStore(view.getOrderChoice());
-                view.closeDialog();
-                view.loadMainProgram();
-            }
+        EventHandler<ActionEvent> eventForOrderButton = event -> {
+            storeCommand.saveProductByOrderInStore(view.getOrderChoice());
+            view.closeDialog();
+            view.loadMainProgram();
         };
         view.addEventToOrder(eventForOrderButton);
     }
 
     private void eventProductButton() {
-        EventHandler<ActionEvent> eventForOrderButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                AddProduct addProductView = new AddProduct();
-                view.update(addProductView);
-                ProductController productController = new ProductController(view, storeCommand, addProductView);
-            }
+        EventHandler<ActionEvent> eventForOrderButton = event -> {
+            AddProduct addProductView = new AddProduct();
+            view.update(addProductView);
+            ProductController productController = new ProductController(view, storeCommand, addProductView);
         };
         view.addEventProductButton(eventForOrderButton);
     }
 
     private void eventCancelButton() {
-        EventHandler<ActionEvent> eventForCancelButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                storeCommand.undoStore();
-                disableCancelButton();
-            }
+        EventHandler<ActionEvent> eventForCancelButton = event -> {
+            storeCommand.undoStore();
+            disableCancelButton();
         };
 
         view.addEventCancelButton(eventForCancelButton);
     }
 
     private void eventSaleButton() {
-        EventHandler<ActionEvent> eventForSaleButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                Sale saleView = new Sale();
-                view.update(saleView);
-                SaleController orderController = new SaleController(view, storeCommand, saleView);
-            }
+        EventHandler<ActionEvent> eventForSaleButton = event -> {
+            Sale saleView = new Sale();
+            view.update(saleView);
+            SaleController orderController = new SaleController(view, storeCommand, saleView);
         };
         view.addEventSaleButton(eventForSaleButton);
     }
 
     private void eventProductListButton() {
-        EventHandler<ActionEvent> eventForProductListButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                ProductList productList = new ProductList();
-                view.update(productList);
-                ProductListController productListController = new ProductListController(view, storeCommand, productList);
-            }
+        EventHandler<ActionEvent> eventForProductListButton = event -> {
+            ProductList productList = new ProductList();
+            view.update(productList);
+            ProductListController productListController = new ProductListController(view, storeCommand, productList);
         };
         view.addEventProductListButton(eventForProductListButton);
     }
@@ -87,13 +77,13 @@ public class StoreController {
     private void enableCancelButton() {
         if (!addedProduct) {
             view.getCancelButton().setDisable(false);
-            view.assignStyleToButton(view.getCancelButton());
+            MainButtons.assignStyleToButton(view.getCancelButton());
             addedProduct = true;
         }
     }
 
     private void disableCancelButton() {
-        view.assignDisableStyleToButton(view.getCancelButton());
+        MainButtons.assignDisableStyleToButton(view.getCancelButton());
         addedProduct = false;
     }
 }

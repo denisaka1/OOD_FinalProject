@@ -39,7 +39,7 @@ public class ProductController extends SecondaryWindowController {
                     double wholesalePrice = addProductView.getWholesalePrice();
                     String customerName = addProductView.getCustomerName();
                     String phoneNumber = addProductView.getPhoneNumber();
-                    Boolean promNotification = addProductView.getPromotionNotification();
+                    boolean promNotification = addProductView.getPromotionNotification();
 
                     if (promNotification && (phoneNumber.isEmpty() || customerName.isEmpty()))
                         throw new IllegalInputException("To receive notifications about promotions please enter a Customer");
@@ -52,7 +52,7 @@ public class ProductController extends SecondaryWindowController {
 
                     Customer customer = new Customer(customerName, phoneNumber, promNotification);
                     Product product = new Product(sku, productName, retailPrice, wholesalePrice, customer);
-                    Boolean renewProduct = storeCommand.addProductToStore(product);
+                    boolean renewProduct = storeCommand.addProductToStore(product);
 
                     StoreController.checkEnableCancelButton.run();
                     // todo: Undo on replaced products ?

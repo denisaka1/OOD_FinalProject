@@ -6,7 +6,7 @@ import java.util.List;
 public class Sender {
 
     private static Sender sender = null;
-    private List<Observer> observers = new ArrayList<Observer>();
+    private List<Observer> observers = new ArrayList<>();
     private ArrayList<String> names;
 
     private String msg;
@@ -23,7 +23,7 @@ public class Sender {
         observers.add(observer);
     }
 
-    public ArrayList<String> SendAll() {
+/*    public ArrayList<String> SendAll() {
         String name;
         names = new ArrayList<>();
         for(Observer observer : observers) {
@@ -32,6 +32,12 @@ public class Sender {
                 names.add(name);
         }
         return names;
+    }*/
+
+    public void SendAll() {
+        for(Observer observer : observers) {
+            observer.send();
+        }
     }
 
     public static Sender getInstance() {

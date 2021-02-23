@@ -45,14 +45,14 @@ public class ProductListController extends SecondaryWindowController {
         Callback<TableColumn<Product, Void>, TableCell<Product, Void>> cellFactory = new Callback<TableColumn<Product, Void>, TableCell<Product, Void>>() {
             @Override
             public TableCell<Product, Void> call(final TableColumn<Product, Void> param) {
-                final TableCell<Product, Void> cell = new TableCell<Product, Void>() {
+                return new TableCell<Product, Void>() {
                     private final Button revBtn = new Button("X");
                     {
                         revBtn.setOnAction((ActionEvent event) -> {
+                            // todo: BARAK YOU HAVE BOOLEAN FROM removeProductFromStore
                             storeCommand.removeProductFromStore(getTableView().getItems().get(getIndex()).getSerialNumber());
-                            // TODO: THE CALL TO REMOVE FUNCTION HERE !!!!
                             setProductInListView();
-                            view.ACTION_TAKEN = true;
+                            HomeScreen.ACTION_TAKEN = true;
                         });
                     }
 
@@ -65,7 +65,6 @@ public class ProductListController extends SecondaryWindowController {
                             setGraphic(revBtn);
                     }
                 };
-                return cell;
             }
         };
         remCol.setCellFactory(cellFactory);
@@ -73,28 +72,26 @@ public class ProductListController extends SecondaryWindowController {
     }
 
     private void eventSearchButton() {
-        EventHandler<ActionEvent> eventForSearchButton = new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent event) {
-                try {
-                    String searchValue = productList.getSearchValue();
-                    if (searchValue.isEmpty()) {
-                        setProductInListView();
-//                        throw new IllegalInputException("Empty");
-                    }
-
-                    productList.getListView().getItems().clear();
-
-                    Product res = storeCommand.getProductFromStore(searchValue);
-                    if (res == null)
-                        throw new IllegalInputException("Not found"); // todo: msg
-
-                    productList.getListView().getItems().add(res);
-                } catch (IllegalInputException i) {
+        EventHandler<ActionEvent> eventForSearchButton = event -> {
+            try {
+                String searchValue = productList.getSearchValue();
+                if (searchValue.isEmpty()) {
                     setProductInListView();
-                    i.showErrorMessage();
-                } catch (Exception e) {
-                    // todo: msg
+//                        throw new IllegalInputException("Empty");
                 }
+
+                productList.getListView().getItems().clear();
+
+                Product res = storeCommand.getProductFromStore(searchValue);
+                if (res == null)
+                    throw new IllegalInputException("Not found"); // todo: msg
+
+                productList.getListView().getItems().add(res);
+            } catch (IllegalInputException i) {
+                setProductInListView();
+                i.showErrorMessage();
+            } catch (Exception e) {
+                // todo: msg
             }
         };
         productList.addEventSearchButton(eventForSearchButton);

@@ -50,12 +50,12 @@ public class MainButtons {
         topHBox.getChildren().addAll(productListVBox, saleVBox);
         bottomHBox.setAlignment(Pos.CENTER);
         topHBox.setAlignment(Pos.CENTER);
-        bottomHBox.setMargin(productVBox, BUTTONS_INSETS);
-        topHBox.setMargin(productListVBox, BUTTONS_INSETS);
+        HBox.setMargin(productVBox, BUTTONS_INSETS);
+        HBox.setMargin(productListVBox, BUTTONS_INSETS);
     }
 
-
     public static void assignStyleToButton(Button button)  {
+        //todo: OPTIMIZE BARAK
         button.setStyle(IDLE_BUTTON_STYLE);
         button.setOnMouseExited(e -> button.setStyle(IDLE_BUTTON_STYLE));
         button.setOnMouseReleased(e -> button.setStyle(IDLE_BUTTON_STYLE));
@@ -64,6 +64,7 @@ public class MainButtons {
     }
 
     public static void assignDisableStyleToButton(Button button) {
+        //todo: OPTIMIZE BARAK
         button.setDisable(true);
         button.setStyle(DISABLE_BUTTON_STYLE);
         button.setOnMouseExited(e -> button.setStyle(DISABLE_BUTTON_STYLE));

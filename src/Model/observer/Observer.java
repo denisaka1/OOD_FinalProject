@@ -6,5 +6,5 @@ package Model.observer;
 //}
 
 public interface Observer {
-    String send();
+    void send();
 }

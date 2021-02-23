@@ -1,7 +1,5 @@
 package Model.observer;
 
-import Model.observer.Receiver;
-
 import java.io.Serializable;
 
 //public class Customer extends Observer implements Serializable{
@@ -19,10 +17,9 @@ public class Customer implements Serializable, Observer{
     }
 
     @Override
-    public String send() {
-        if(promotionsNotification)
-            return name;
-        return null;
+    public void send() {
+        if(promotionsNotification) {
+        }
     }
 
     public boolean getEventOnSales() {

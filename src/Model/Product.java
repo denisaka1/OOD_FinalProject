@@ -58,7 +58,6 @@ public class Product implements Serializable {
             read the Product Object
              */
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(byteArray));
-//        int size = ois.readInt();
         Product temp = (Product)ois.readObject();
         ois.close();
 

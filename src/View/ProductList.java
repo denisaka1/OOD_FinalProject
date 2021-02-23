@@ -20,7 +20,6 @@ public class ProductList extends SecondaryWindow {
     private Text profit, profitLabel;
     private final Insets SEARCHBAR_INSETS = new Insets(0, 20, 0, 0);
 
-
     public ProductList() {
         assignAll();
     }

@@ -14,6 +14,20 @@ public class StoreCommand {
 
     public StoreCommand(String filename) {
         store = new Store(filename);
+        loadAllPromotionNames();
+    }
+
+    private void loadAllPromotionNames() {
+        names = new ArrayList<>();
+
+        if(!store.isEmpty()) {
+            Customer customer;
+            for(Product product: store.getProductList()){
+                customer = product.getCustomer();
+                if(customer.getEventOnSales())
+                    names.add(customer.getName());
+            }
+        }
     }
 
     private boolean addProduct(Product product) {
@@ -23,17 +37,21 @@ public class StoreCommand {
         boolean renewProduct = store.addProduct(product);
 
         customer = product.getCustomer();
+        String name;
 
         if (customer != null) {
-            if (customer.getEventOnSales())
+            name = customer.getName();
+            if (customer.getEventOnSales()){
                 store.getSender().attach(customer);
+                if(!names.contains(name))
+                    names.add(name);
+            }
         }
 
         return renewProduct;
     }
 
-    public Boolean removeProduct(String serialNumber) {
-
+    public boolean removeProduct(String serialNumber) {
         return store.removeProduct(serialNumber);
     }
 
@@ -61,7 +79,8 @@ public class StoreCommand {
 
     private void sendSaleMessage(String msg) {
         store.getSender().setMessage(msg);
-        names = store.getSender().SendAll();
+//        names = store.getSender().SendAll();
+        store.getSender().SendAll();
     }
 
     public boolean addProductToStore(Product product){
@@ -84,7 +103,12 @@ public class StoreCommand {
         undo();
     }
 
-    public boolean removeProductFromStore(String serialNumber) { return removeProduct(serialNumber); }
+    public boolean removeProductFromStore(String serialNumber) {
+        String customerName = store.getProduct(serialNumber).getCustomer().getName();
+        names.remove(customerName);
+
+        return removeProduct(serialNumber);
+    }
 
     public void sendSaleMessageToAllCustomers(String msg) {
         sendSaleMessage(msg);

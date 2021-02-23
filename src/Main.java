@@ -13,7 +13,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         StoreCommand storeCommand = new StoreCommand(filename);
         HomeScreen view = new HomeScreen(stage);
         StoreController controller = new StoreController(view, storeCommand);

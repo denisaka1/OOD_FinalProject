@@ -10,7 +10,6 @@ import java.util.*;
 
 public class Store {
 
-    // todo: enum?
     public final static int ASC = 0;
     public final static int DESC = 1;
     public final static int DEFAULT = 2;
@@ -38,6 +37,10 @@ public class Store {
 
     public void setOrderBy(int order) {
         saveAndPrintAs = order;
+    }
+
+    protected boolean isEmpty(){
+        return allProducts.isEmpty();
     }
 
     private void loadFromFile() {
@@ -131,12 +134,8 @@ public class Store {
     }
 
     public ArrayList<Product> getProductList() {
-        ArrayList<Product> list = new ArrayList<>();
 
-        for (Product p : allProducts.values())
-            list.add(p);
-
-        return list;
+        return new ArrayList<>(allProducts.values());
     }
 
     public boolean removeProductFromFile(String serialNumber){
@@ -144,13 +143,12 @@ public class Store {
     }
 
     public boolean removeProduct(String serialNumber){
-        Boolean succ = false;
+        boolean success = false;
         if (allProducts.containsKey(serialNumber)) {
-//            succ = true;
             allProducts.remove(serialNumber);
-            succ = removeProductFromFile(serialNumber);
+            success = removeProductFromFile(serialNumber);
         }
-        return succ;
+        return success;
     }
 
     public Sender getSender() {
