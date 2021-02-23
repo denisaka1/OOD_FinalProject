@@ -18,8 +18,11 @@ public class Store {
     private Map<String, Product> allProducts;
     private FileHandler binaryFileManager;
     private int saveAndPrintAs;
+<<<<<<< HEAD
     private Sender sender = Sender.getInstance();
 
+=======
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
 //    private final String fileName = "data/products.txt";
 
 /*    public Store() {
@@ -32,6 +35,7 @@ public class Store {
 //        this();
         saveAndPrintAs = DEFAULT;
         binaryFileManager = new FileHandler(filename);
+<<<<<<< HEAD
         loadFromFile();
         allProducts = createMap();
     }
@@ -52,12 +56,25 @@ public class Store {
         }
     }
 
+=======
+        readAllFromFile();
+        allProducts = createMap();
+    }
+
+    private void readAllFromFile() {
+        allProducts = binaryFileManager.readProducts();
+    }
+
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
     protected boolean addProduct(Product product){
         // todo: add boolean for msg
         String serialNumber = product.getSerialNumber();
         boolean isReplaced = false;
 
+<<<<<<< HEAD
         // True - Renew\Replace
+=======
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
         if(allProducts.containsKey(serialNumber)){
             isReplaced = true;
             allProducts.replace(serialNumber, product);
@@ -85,6 +102,7 @@ public class Store {
 
             allProducts = createMap();
         }
+<<<<<<< HEAD
     }
 
     private Comparator<String> getComparatorByOrder(int order) {
@@ -119,6 +137,42 @@ public class Store {
         allProducts = new LinkedHashMap<>(m.getProducts());
     }
 
+=======
+    }
+
+    private Comparator<String> getComparatorByOrder(int order) {
+
+        StringAscComparator comparator = new StringAscComparator();
+
+        if(order == ASC)
+            return comparator;
+
+        return comparator.reversed();
+    }
+
+    private Map<String, Product> createMap() {
+        // also used to clone the current Map
+        Map<String, Product> currentState;
+
+        switch(saveAndPrintAs){
+            case ASC:
+            case DESC:
+                currentState = new TreeMap<>(getComparatorByOrder(saveAndPrintAs));
+                currentState.putAll(allProducts);
+                break;
+            default:
+                currentState = new LinkedHashMap<>(allProducts);
+                break;
+        }
+
+        return currentState;
+    }
+
+    protected void setStore(Memento m) {
+        allProducts = new LinkedHashMap<>(m.getProducts());
+    }
+
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
     protected Memento createMemento() {
         return new Memento(createMap());
     }
@@ -143,6 +197,7 @@ public class Store {
         return binaryFileManager.removeProduct(serialNumber);
     }
 
+<<<<<<< HEAD
     public boolean removeProduct(String serialNumber){
         Boolean succ = false;
         if (allProducts.containsKey(serialNumber)) {
@@ -157,6 +212,8 @@ public class Store {
         return sender;
     }
 
+=======
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
     protected static class Memento {
         private final Map<String, Product> products;
 

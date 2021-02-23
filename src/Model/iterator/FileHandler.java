@@ -7,7 +7,12 @@ import java.io.*;
 import java.util.*;
 
 public class FileHandler implements Iterable<Product> {
+<<<<<<< HEAD
     //    private long writePos;
+=======
+
+//    private long writePos;
+>>>>>>> 100e603d03f962cb16fdccb0c8966dc61c3a1bf3
     private long readPos;
     private long fileSize;
     private RandomAccessFile raf;
