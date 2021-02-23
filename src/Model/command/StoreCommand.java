@@ -19,13 +19,17 @@ public class StoreCommand {
 
     private void loadAllPromotionNames() {
         names = new ArrayList<>();
+        String name;
 
         if(!store.isEmpty()) {
             Customer customer;
             for(Product product: store.getProductList()){
                 customer = product.getCustomer();
-                if(customer.getEventOnSales())
-                    names.add(customer.getName());
+                name = customer.getName();
+                if(customer.getEventOnSales()) {
+                    if(!names.contains(name))
+                        names.add(customer.getName());
+                }
             }
         }
     }

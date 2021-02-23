@@ -68,10 +68,17 @@ public class Store {
 
         }else{
             allProducts.put(product.getSerialNumber(), product);
-            binaryFileManager.writeProduct(product);
+//            binaryFileManager.writeProduct(product);
+            writeProducts();
         }
 
         return isReplaced;
+    }
+
+    private void writeProducts() {
+        binaryFileManager.clearFile();
+        for(Product product:allProducts.values())
+            binaryFileManager.writeProduct(product);
     }
 
     protected Map<String, Product> getCurrentMap() {
