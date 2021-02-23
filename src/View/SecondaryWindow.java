@@ -15,7 +15,7 @@ public class SecondaryWindow {
     protected HBox buttonsHBox;
     protected VBox mainView, backToMainVBox, submitVBox;
     protected final double MIN_BUTTON_WIDTH_VALUE = 30.d;
-    protected final Font BUTTONS_FONT = Font.font("Tahoma", FontWeight.LIGHT, FontPosture.REGULAR, 14);
+    protected static final Font BUTTONS_FONT = Font.font("Tahoma", FontWeight.LIGHT, FontPosture.REGULAR, 14);
     protected final double TEXT_INPUT_WIDTH_VALUE = 300.d;
 
     public SecondaryWindow() {

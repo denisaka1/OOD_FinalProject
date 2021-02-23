@@ -34,15 +34,15 @@ public class Product implements Serializable {
         return serialNumber;
     }
 
-    protected String getProductName() {
+    public String getProductName() {
         return productName;
     }
 
-    protected double getRetailPrice() {
+    public double getRetailPrice() {
         return retailPrice;
     }
 
-    protected double getWholesalePrice() {
+    public double getWholesalePrice() {
         return wholesalePrice;
     }
 

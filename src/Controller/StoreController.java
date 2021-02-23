@@ -8,13 +8,10 @@ import javafx.event.EventHandler;
 public class StoreController {
     protected StoreCommand storeCommand;
     protected HomeScreen view;
-//    private Stage dialog;
-//    private VBox dialogVBox;
     protected static Runnable checkEnableCancelButton;
     private boolean addedProduct;
 
     public StoreController(HomeScreen view, StoreCommand storeCommand) {
-//    public StoreController(ModelStore model, HomeScreen view) {
         this.view = view;
         this.storeCommand = storeCommand;
 
@@ -25,10 +22,22 @@ public class StoreController {
     }
 
     private void assignAllEvents() {
+        eventOrderButton();
         eventProductButton();
         eventCancelButton();
         eventSaleButton();
         eventProductListButton();
+    }
+
+    private void eventOrderButton() {
+        EventHandler<ActionEvent> eventForOrderButton = new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent event) {
+                storeCommand.setOrderToStore(view.getOrderChoice());
+                view.closeDialog();
+                view.loadMainProgram();
+            }
+        };
+        view.addEventToOrder(eventForOrderButton);
     }
 
     private void eventProductButton() {
@@ -43,8 +52,13 @@ public class StoreController {
     }
 
     private void eventCancelButton() {
-        EventHandler<ActionEvent> eventForCancelButton = e -> storeCommand.undoStore();
-        // todo: Disable button
+        EventHandler<ActionEvent> eventForCancelButton = new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent event) {
+                storeCommand.undoStore();
+                disableCancelButton();
+            }
+        };
+
         view.addEventCancelButton(eventForCancelButton);
     }
 
@@ -53,8 +67,7 @@ public class StoreController {
             public void handle(ActionEvent event) {
                 Sale saleView = new Sale();
                 view.update(saleView);
-//                SaleController orderController = new SaleController(saleView);
-//                SaleController orderController = new SaleController(model, saleView);
+                SaleController orderController = new SaleController(view, storeCommand, saleView);
             }
         };
         view.addEventSaleButton(eventForSaleButton);
@@ -77,6 +90,11 @@ public class StoreController {
             view.assignStyleToButton(view.getCancelButton());
             addedProduct = true;
         }
+    }
+
+    private void disableCancelButton() {
+        view.assignDisableStyleToButton(view.getCancelButton());
+        addedProduct = false;
     }
 }
 

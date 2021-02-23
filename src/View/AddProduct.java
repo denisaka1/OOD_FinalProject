@@ -1,12 +1,14 @@
 package View;
 
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class AddProduct extends SecondaryWindow {
     private TextField nameTF, phoneNumberTF, skuTF, productNameTF, retailPriceTF, wholesalePriceTF;
-    private HBox nameHBox, phoneNumberHBox, skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox;
+    private HBox nameHBox, phoneNumberHBox, skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, saleHBox;
+    private CheckBox saleCB;
 
     public AddProduct() {
         super();
@@ -20,6 +22,7 @@ public class AddProduct extends SecondaryWindow {
         setSKUField();
         setProductNameField();
         setRetailPriceField();
+        setSaleField();
     }
 
 /*    private void setProductTitle() {
@@ -94,20 +97,19 @@ public class AddProduct extends SecondaryWindow {
         phoneNumberHBox.getChildren().addAll(phoneNumberTF);
     }
 
-    // Checkbox
-    /*private void setPhoneNumberField() {
-        phoneNumberHBox = new HBox();
-        phoneNumberTF = new TextField();
-        phoneNumberTF.setPromptText("Enter Phone Number");
-        phoneNumberTF.setFont(BUTTONS_FONT);
-        phoneNumberTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
-        phoneNumberHBox.getChildren().addAll(phoneNumberTF);
-    }*/
+    private void setSaleField() {
+        saleHBox = new HBox();
+        saleCB = new CheckBox();
+        saleCB.setText("Notification on promotions?");
+        saleCB.setFont(BUTTONS_FONT);
+        saleCB.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        saleHBox.getChildren().addAll(saleCB);
+    }
 
     @Override
     public VBox update() {
 //        mainView.getChildren().clear();
-        mainView.getChildren().addAll(skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, nameHBox,phoneNumberHBox, buttonsHBox);
+        mainView.getChildren().addAll(skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, nameHBox, phoneNumberHBox, saleHBox, buttonsHBox);
 //        mainView.setMargin(submitButton, DEFAULT_INSETS);
 
         return mainView;
@@ -121,12 +123,16 @@ public class AddProduct extends SecondaryWindow {
         return productNameTF.getText();
     }
 
-    public String getRetailPrice() {
-        return retailPriceTF.getText();
+    public double getRetailPrice() {
+        if (!retailPriceTF.getText().isEmpty())
+            return Double.parseDouble(retailPriceTF.getText());
+        return 0.0;
     }
 
-    public String getWholesalePrice() {
-        return wholesalePriceTF.getText();
+    public double getWholesalePrice() {
+        if (!wholesalePriceTF.getText().isEmpty())
+            return Double.parseDouble(wholesalePriceTF.getText());
+        return 0.0;
     }
 
     public String getCustomerName() {
@@ -135,5 +141,9 @@ public class AddProduct extends SecondaryWindow {
 
     public String getPhoneNumber() {
         return phoneNumberTF.getText();
+    }
+
+    public Boolean getPromotionNotification() {
+        return saleCB.isSelected();
     }
 }

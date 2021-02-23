@@ -63,6 +63,15 @@ public class MainButtons {
         button.setOnMousePressed(e -> button.setStyle(PRESSED_BUTTON_STYLE));
     }
 
+    public static void assignDisableStyleToButton(Button button) {
+        button.setDisable(true);
+        button.setStyle(DISABLE_BUTTON_STYLE);
+        button.setOnMouseExited(e -> button.setStyle(DISABLE_BUTTON_STYLE));
+        button.setOnMouseReleased(e -> button.setStyle(DISABLE_BUTTON_STYLE));
+        button.setOnMouseEntered(e -> button.setStyle(DISABLE_BUTTON_STYLE ));
+        button.setOnMousePressed(e -> button.setStyle(DISABLE_BUTTON_STYLE));
+    }
+
     private Button makeButton(String path) {
         try {
             FileInputStream input = new FileInputStream(path);
@@ -92,8 +101,10 @@ public class MainButtons {
     private void assignCancelButton() {
         cancelButton = makeButton("src/Images/undo.png");
 //        assignStyleToButton(cancelButton);
-        cancelButton.setDisable(true);
-        cancelButton.setStyle(DISABLE_BUTTON_STYLE);
+//        cancelButton.setDisable(true);
+//        cancelButton.setStyle(DISABLE_BUTTON_STYLE);
+
+        assignDisableStyleToButton(cancelButton);
 
         cancelText = new Text("Cancel Last Order");
         cancelText.setFont(BUTTONS_FONT);
