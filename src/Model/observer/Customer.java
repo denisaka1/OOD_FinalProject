@@ -1,8 +1,11 @@
 package Model.observer;
 
+import Model.observer.Receiver;
+
 import java.io.Serializable;
 
-public class Customer extends Observer implements Serializable {
+//public class Customer extends Observer implements Serializable{
+public class Customer implements Serializable, Observer{
 
     private static final long serialVersionUID = 7526472295622776147L;
     private String name;
@@ -32,5 +35,14 @@ public class Customer extends Observer implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", promotionsNotification=" + promotionsNotification +
+                '}';
     }
 }

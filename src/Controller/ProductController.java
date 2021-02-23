@@ -1,5 +1,6 @@
 package Controller;
 
+import Exceptions.IllegalInputException;
 import Model.Product;
 import Model.command.StoreCommand;
 import Model.observer.Customer;
@@ -27,34 +28,46 @@ public class ProductController extends SecondaryWindowController {
 
             @Override
             public void handle(ActionEvent actionEvent) {
+                String sku = addProductView.getSKU();
+
                 try {
-                    String sku = addProductView.getSKU();
                     if (sku.isEmpty())
-                        throw new NullPointerException();
+                        throw new IllegalInputException("Please fill in the SKU field");
 
                     String productName = addProductView.getProductName();
-                    double retailPrice = Double.parseDouble(addProductView.getRetailPrice());
-                    double wholesalePrice = Double.parseDouble(addProductView.getWholesalePrice());
+                    double retailPrice = addProductView.getRetailPrice();
+                    double wholesalePrice = addProductView.getWholesalePrice();
                     String customerName = addProductView.getCustomerName();
                     String phoneNumber = addProductView.getPhoneNumber();
+                    Boolean promNotification = addProductView.getPromotionNotification();
 
-                    Customer customer = new Customer(customerName, phoneNumber, false); // todo: make checkbox
+                    if (promNotification && phoneNumber.isEmpty())
+                        throw new IllegalInputException("To receive notifications about promotions please enter a phone number");
+
+                    if (!customerName.matches("^[a-zA-Z\\s]+") && !customerName.isEmpty())
+                        throw new IllegalInputException("Please fill a legal name");
+
+                    if (!phoneNumber.matches("(05[0-9]|0[12346789])([0-9]{7})") && !phoneNumber.isEmpty())
+                        throw new IllegalInputException("Please fill a legal israeli cell phone number without hyphens");
+
+                    Customer customer = new Customer(customerName, phoneNumber, promNotification);
                     Product product = new Product(sku, productName, retailPrice, wholesalePrice, customer);
-                    storeCommand.addProductToStore(product);
+                    Boolean renewProduct = storeCommand.addProductToStore(product);
 
                     StoreController.checkEnableCancelButton.run();
+                    // todo: Undo on replaced products ?
 
                     alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setContentText("Product Added");
+                    if (!renewProduct)
+                        alert.setContentText("Product Added!");
+                    else
+                        alert.setContentText("Product Replaced!");
                     alert.showAndWait();
 
                     view.loadMain();
-
-                } catch(NullPointerException npe) {
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Please enter SKU");
-                    alert.showAndWait();
-                } catch(Exception e) {
+                } catch (IllegalInputException i) {
+                    i.showErrorMessage();
+                } catch (Exception e) {
                     alert = new Alert(Alert.AlertType.ERROR);
                     alert.setContentText("Something went wrong");
                     alert.showAndWait();
