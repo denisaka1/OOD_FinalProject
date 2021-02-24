@@ -24,6 +24,8 @@ public class HomeScreen extends MainButtons {
     private VBox dialogVBox;
     private ChoiceBox dialogCB;
     private Button dialogButton;
+    public static final String css = HomeScreen.class.getResource("/Assets/stylesheet.css").toExternalForm();
+
 
     public HomeScreen(Stage stage) {
         super();
@@ -38,6 +40,7 @@ public class HomeScreen extends MainButtons {
 
     public void loadMainProgram() {
         scene = new Scene(borderPane, WIDTH, HEIGHT);
+        scene.getStylesheets().add(css);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -51,6 +54,7 @@ public class HomeScreen extends MainButtons {
         dialogCB.getSelectionModel().select(ASC);
 
         dialogButton = new Button("Choose");
+        dialogButton.getStyleClass().add("button-order");
 
         dialogVBox = new VBox(new Text("Order Product By"), dialogCB, dialogButton);
         VBox.setMargin(dialogCB, new Insets(10));
@@ -58,7 +62,10 @@ public class HomeScreen extends MainButtons {
         dialogVBox.setAlignment(Pos.CENTER);
         dialogVBox.setPadding(new Insets(30));
 
-        dialog.setScene(new Scene(dialogVBox));
+        Scene dialogScene = new Scene(dialogVBox);
+        dialogScene.getStylesheets().add(css);
+
+        dialog.setScene(dialogScene);
         dialog.setResizable(false);
         dialog.show();
     }
@@ -87,6 +94,10 @@ public class HomeScreen extends MainButtons {
 
     public Scene getScene() {
         return scene;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     public void addEventToOrder(EventHandler<ActionEvent> event) {

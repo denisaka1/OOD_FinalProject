@@ -7,32 +7,41 @@ import View.HomeScreen;
 import View.ProductList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class ProductListController extends SecondaryWindowController {
     private ProductList productList;
+    private Stage quickStage;
+    private Scene quickShowScene;
+    private VBox quickVBox;
     private double profit;
 
     public ProductListController(HomeScreen homeScreenView, StoreCommand storeCommand, ProductList productList) {
         super(homeScreenView, storeCommand, productList);
         this.productList = productList;
-        profit = 0;
 
         setProductInListView();
         addRemoveButtonToTable();
         eventSearchButton();
-        setProfit();
+        eventProductShow();
+        eventForBackToMainButton();
     }
 
     private void setProductInListView() {
-        productList.getListView().getItems().clear();
+        productList.getTableView().getItems().clear();
+        profit = 0;
         for (Product p : storeCommand.getAllProductsFromStore()) {
-            productList.getListView().getItems().add(p);
+            productList.getTableView().getItems().add(p);
             profit += p.getRetailPrice() - p.getWholesalePrice();
         }
+        setProfit();
     }
 
     private void setProfit() {
@@ -46,14 +55,17 @@ public class ProductListController extends SecondaryWindowController {
             @Override
             public TableCell<Product, Void> call(final TableColumn<Product, Void> param) {
                 return new TableCell<Product, Void>() {
-                    private final Button revBtn = new Button("X");
+                    private final Button revBtn = new Button("");
                     {
                         revBtn.setOnAction((ActionEvent event) -> {
+                            closeQuick();
                             // todo: BARAK YOU HAVE BOOLEAN FROM removeProductFromStore
                             storeCommand.removeProductFromStore(getTableView().getItems().get(getIndex()).getSerialNumber());
                             setProductInListView();
                             HomeScreen.ACTION_TAKEN = true;
                         });
+                        revBtn.getStyleClass().add("button-remove");
+                        setStyle("-fx-alignment: center;");
                     }
 
                     @Override
@@ -68,32 +80,80 @@ public class ProductListController extends SecondaryWindowController {
             }
         };
         remCol.setCellFactory(cellFactory);
-        productList.getListView().getColumns().add(remCol);
+        productList.getTableView().getColumns().add(remCol);
     }
 
     private void eventSearchButton() {
         EventHandler<ActionEvent> eventForSearchButton = event -> {
             try {
+                closeQuick();
+
                 String searchValue = productList.getSearchValue();
                 if (searchValue.isEmpty()) {
                     setProductInListView();
-//                        throw new IllegalInputException("Empty");
+                    throw new NullPointerException();
                 }
 
-                productList.getListView().getItems().clear();
+                productList.getTableView().getItems().clear();
 
                 Product res = storeCommand.getProductFromStore(searchValue);
                 if (res == null)
                     throw new IllegalInputException("Not found"); // todo: msg
 
-                productList.getListView().getItems().add(res);
+                productList.getTableView().getItems().add(res);
             } catch (IllegalInputException i) {
                 setProductInListView();
                 i.showErrorMessage();
+            } catch (NullPointerException npe) {
+                // Nothing
             } catch (Exception e) {
                 // todo: msg
             }
         };
         productList.addEventSearchButton(eventForSearchButton);
+    }
+
+    private void eventProductShow() {
+        productList.getTableView().setRowFactory(tr -> {
+            TableRow<Product> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                closeQuick();
+
+                if (event.getClickCount() == 2 && (!row.isEmpty()) ) {
+                    Product rowData = row.getItem();
+                    quickVBox = productList.productShowDialog(rowData);
+
+                    quickStage = new Stage();
+                    quickStage.setTitle("Quick Show");
+                    quickShowScene = new Scene(quickVBox);
+                    quickShowScene.getStylesheets().add(view.css);
+
+                    quickStage.setScene(quickShowScene);
+                    quickStage.setResizable(false);
+                    quickStage.show();
+
+                    eventQuickCloseButton();
+                }
+            });
+            return row ;
+        });
+    }
+
+    private void eventQuickCloseButton() {
+        EventHandler<ActionEvent> eventForQuickCloseButton = event -> closeQuick();
+        productList.addEventToQuickCloseButton(eventForQuickCloseButton);
+    }
+
+    private void closeQuick() {
+        if (quickStage != null)
+            quickStage.close();
+    }
+
+    private void eventForBackToMainButton() {
+        EventHandler<ActionEvent> eventForBackToMainButton = (e -> {
+            closeQuick();
+            view.loadMain();
+        });
+        productList.eventBackToMainButton(eventForBackToMainButton);
     }
 }

@@ -24,10 +24,10 @@ public class MainButtons {
     public static final Font BUTTONS_FONT = Font.font("Tahoma", FontWeight.BOLD, FontPosture.REGULAR, 13);
     public static final Insets BUTTONS_INSETS = new Insets(0, 40, 20, 0);
     public static final Insets HEADER_INSETS = new Insets(20, 0, 0, 0);
-    public static final String HOVERED_BUTTON_STYLE  = "-fx-background-color: transparent; -fx-opacity : 0.5;";
-    public static final String DISABLE_BUTTON_STYLE  = "-fx-background-color: transparent; -fx-opacity : 0.3;";
-    public static final String IDLE_BUTTON_STYLE = "-fx-background-color: transparent; -fx-opacity : 1;";
-    public static final String PRESSED_BUTTON_STYLE = "-fx-background-color: transparent; -fx-opacity : 0;";
+//    public static final String HOVERED_BUTTON_STYLE  = "-fx-background-color: transparent; -fx-opacity : 0.5;";
+//    public static final String DISABLE_BUTTON_STYLE  = "-fx-background-color: transparent; -fx-opacity : 0.3;";
+//    public static final String IDLE_BUTTON_STYLE = "-fx-background-color: transparent; -fx-opacity : 1;";
+//    public static final String PRESSED_BUTTON_STYLE = "-fx-background-color: transparent; -fx-opacity : 0;";
 
     public MainButtons() {
         // Assign main buttons
@@ -55,6 +55,17 @@ public class MainButtons {
     }
 
     public static void assignStyleToButton(Button button)  {
+        button.getStyleClass().clear();
+        button.getStyleClass().addAll("button-main", "button-cancel");
+    }
+
+    public static void assignDisableStyleToButton(Button button) {
+        button.getStyleClass().clear();
+        button.setDisable(true);
+        button.getStyleClass().addAll("disable", "button-main", "button-cancel");
+    }
+
+/*    public static void assignStyleToButton(Button button)  {
         //todo: OPTIMIZE BARAK
         button.setStyle(IDLE_BUTTON_STYLE);
         button.setOnMouseExited(e -> button.setStyle(IDLE_BUTTON_STYLE));
@@ -84,12 +95,15 @@ public class MainButtons {
             // todo: err
             return null;
         }
-    }
+    }*/
 
     private void assignNewProductButton() {
         productVBox = new VBox();
-        productButton = makeButton("src/Images/newProduct.png");
-        assignStyleToButton(productButton);
+
+        productButton = new Button("");
+        productButton.getStyleClass().addAll("button-main", "button-product");
+//        productButton = makeButton("src/Images/newProduct.png");
+//        assignStyleToButton(productButton);
 
         productText = new Text("New Purchase");
         productText.setFont(BUTTONS_FONT);
@@ -100,12 +114,15 @@ public class MainButtons {
     }
 
     private void assignCancelButton() {
-        cancelButton = makeButton("src/Images/undo.png");
+        cancelButton = new Button("");
+        assignDisableStyleToButton(cancelButton);
+
+//        cancelButton = makeButton("src/Images/undo.png");
 //        assignStyleToButton(cancelButton);
 //        cancelButton.setDisable(true);
 //        cancelButton.setStyle(DISABLE_BUTTON_STYLE);
 
-        assignDisableStyleToButton(cancelButton);
+//        assignDisableStyleToButton(cancelButton);
 
         cancelText = new Text("Cancel Last Order");
         cancelText.setFont(BUTTONS_FONT);
@@ -116,8 +133,11 @@ public class MainButtons {
     }
 
     private void assignSaleButton() {
-        saleButton = makeButton("src/Images/newSale.png");
-        assignStyleToButton(saleButton);
+//        saleButton = makeButton("src/Images/newSale.png");
+//        assignStyleToButton(saleButton);
+
+        saleButton = new Button("");
+        saleButton.getStyleClass().addAll("button-main", "button-sale");
 
         saleText = new Text("New Sale");
         saleText.setFont(BUTTONS_FONT);
@@ -128,9 +148,11 @@ public class MainButtons {
     }
 
     private void assignProductListButton() {
-        productListButton = makeButton("src/Images/ProductsList.png");
+        productListButton = new Button("");
+        productListButton.getStyleClass().addAll("button-main", "button-list-products");
 
-        assignStyleToButton(productListButton);
+//        productListButton = makeButton("src/Images/ProductsList.png");
+//        assignStyleToButton(productListButton);
 
         productListText = new Text("Show Product List");
         productListText.setFont(BUTTONS_FONT);

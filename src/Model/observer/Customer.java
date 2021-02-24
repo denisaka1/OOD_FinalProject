@@ -1,5 +1,7 @@
 package Model.observer;
 
+import javafx.beans.property.SimpleStringProperty;
+
 import java.io.Serializable;
 
 //public class Customer extends Observer implements Serializable{
@@ -36,10 +38,10 @@ public class Customer implements Serializable, Observer{
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", promotionsNotification=" + promotionsNotification +
-                '}';
+        return "Customer" +
+                "\nName: " + name +
+                "\nPhone Number: " + phoneNumber +
+                "\nPromotions Notification? " + (promotionsNotification ? "Yes" : "No") +
+                "\n";
     }
 }

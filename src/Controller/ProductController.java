@@ -74,6 +74,6 @@ public class ProductController extends SecondaryWindowController {
                 }
             }
         };
-        addProductView.eventSubmitButton(eventForOrderButton);
+        addProductView.eventOrderButton(eventForOrderButton);
     }
 }
