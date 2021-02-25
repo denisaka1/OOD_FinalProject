@@ -2,7 +2,10 @@ package Controller;
 
 import Exceptions.IllegalInputException;
 import Model.Product;
-import Model.command.StoreCommand;
+import Model.command.GetAllProductsCommand;
+import Model.command.GetProductCommand;
+import Model.command.RemoveProductCommand;
+import Model.command.Store;
 import View.HomeScreen;
 import View.ProductList;
 import javafx.event.ActionEvent;
@@ -23,8 +26,8 @@ public class ProductListController extends SecondaryWindowController {
     private VBox quickVBox;
     private double profit;
 
-    public ProductListController(HomeScreen homeScreenView, StoreCommand storeCommand, ProductList productList) {
-        super(homeScreenView, storeCommand, productList);
+    public ProductListController(HomeScreen homeScreenView, Store store, ProductList productList) {
+        super(homeScreenView, store, productList);
         this.productList = productList;
 
         setProductInListView();
@@ -37,7 +40,10 @@ public class ProductListController extends SecondaryWindowController {
     private void setProductInListView() {
         productList.getTableView().getItems().clear();
         profit = 0;
-        for (Product p : storeCommand.getAllProductsFromStore()) {
+        GetAllProductsCommand allProductsCommand = new GetAllProductsCommand(store);
+        allProductsCommand.execute();
+
+        for (Product p : allProductsCommand.get()) {
             productList.getTableView().getItems().add(p);
             profit += p.getRetailPrice() - p.getWholesalePrice();
         }
@@ -59,8 +65,8 @@ public class ProductListController extends SecondaryWindowController {
                     {
                         revBtn.setOnAction((ActionEvent event) -> {
                             closeQuick();
-                            // todo: BARAK YOU HAVE BOOLEAN FROM removeProductFromStore
-                            storeCommand.removeProductFromStore(getTableView().getItems().get(getIndex()).getSerialNumber());
+//                            storeCommand.removeProductFromStore(storeCommand.removeProductFromStore());
+                            new RemoveProductCommand(store, getTableView().getItems().get(getIndex()).getSerialNumber()).execute();
                             setProductInListView();
                             HomeScreen.ACTION_TAKEN = true;
                         });
@@ -96,7 +102,11 @@ public class ProductListController extends SecondaryWindowController {
 
                 productList.getTableView().getItems().clear();
 
-                Product res = storeCommand.getProductFromStore(searchValue);
+                GetProductCommand getProductCommand = new GetProductCommand(store, searchValue);
+                getProductCommand.execute();
+
+                Product res = getProductCommand.get();
+//                Product res = storeCommand.getProductFromStore();
                 if (res == null)
                     throw new IllegalInputException("Not found"); // todo: msg
 

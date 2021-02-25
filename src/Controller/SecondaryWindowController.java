@@ -1,6 +1,6 @@
 package Controller;
 
-import Model.command.StoreCommand;
+import Model.command.Store;
 import View.HomeScreen;
 import View.SecondaryWindow;
 import javafx.event.ActionEvent;
@@ -9,8 +9,8 @@ import javafx.event.EventHandler;
 public class SecondaryWindowController extends StoreController {
     private SecondaryWindow secondaryWindow;
 
-    public SecondaryWindowController(HomeScreen homeScreenView, StoreCommand storeCommand, SecondaryWindow secondaryWindow) {
-        super(homeScreenView, storeCommand);
+    public SecondaryWindowController(HomeScreen homeScreenView, Store store, SecondaryWindow secondaryWindow) {
+        super(homeScreenView, store);
         this.secondaryWindow = secondaryWindow;
 
         eventForBackToMainButton();

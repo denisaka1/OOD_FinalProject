@@ -3,12 +3,13 @@ package Model.command;
 import Model.Product;
 import Model.comparators.StringAscComparator;
 import Model.iterator.FileHandler;
+import Model.memento.Memento;
 import Model.observer.Customer;
 import Model.observer.Sender;
-
 import java.util.*;
 
-public class Store {
+public class Store implements StoreCommand {
+    public static final String FILENAME = "data/products.txt";
 
     public final static int ASC = 0;
     public final static int DESC = 1;
@@ -17,101 +18,113 @@ public class Store {
     private Map<String, Product> allProducts;
     private FileHandler binaryFileManager;
     private int saveAndPrintAs;
+    private Memento previous;
+    private ArrayList<String> names;
+
     private Sender sender = Sender.getInstance();
 
-//    private final String fileName = "data/products.txt";
-
-/*    public Store() {
-//        allProducts = new HashMap<>();
-//        binaryFileManager = new FileHandler(fileName);
+    public Store() {
         saveAndPrintAs = DEFAULT;
-    }*/
-
-    public Store(String filename) {
-//        this();
-        saveAndPrintAs = DEFAULT;
-        binaryFileManager = new FileHandler(filename);
+        binaryFileManager = new FileHandler(FILENAME);
+        names = new ArrayList<>();
         loadFromFile();
         allProducts = createMap();
     }
 
-    public void setOrderBy(int order) {
-        saveAndPrintAs = order;
-    }
-
-    protected boolean isEmpty(){
+    @Override
+    public boolean isProductEmpty() {
         return allProducts.isEmpty();
     }
 
-    private void loadFromFile() {
-        allProducts = binaryFileManager.readProducts();
-        Customer tmp;
-        for (Product p : allProducts.values()) {
-            tmp = p.getCustomer();
-            if (tmp != null) {
-                if (tmp.getEventOnSales())
-                    sender.attach(tmp);
-            }
-        }
-    }
+    @Override
+    public boolean addProduct(Product newProduct) {
+        previous = createMemento();
 
-    protected boolean addProduct(Product product){
-        // todo: add boolean for msg
-        String serialNumber = product.getSerialNumber();
+        String serialNumber = newProduct.getSerialNumber();
         boolean isReplaced = false;
 
         // True - Renew\Replace
-        if(allProducts.containsKey(serialNumber)){
+        if (allProducts.containsKey(serialNumber)) {
             isReplaced = true;
-            allProducts.replace(serialNumber, product);
-            binaryFileManager.replaceProductBySerialNumber(serialNumber, product);
+            allProducts.replace(serialNumber, newProduct);
+            binaryFileManager.replaceProductBySerialNumber(serialNumber, newProduct);
+        } else {
+            Customer customer = newProduct.getCustomer();
+            String name;
 
-        }else{
-            allProducts.put(product.getSerialNumber(), product);
-//            binaryFileManager.writeProduct(product);
+            if (customer != null) {
+                name = customer.getName();
+                if (customer.getEventOnSales()){
+                    sender.attach(customer);
+                    if(!names.contains(name))
+                        names.add(name);
+                }
+            }
+
+            allProducts.put(newProduct.getSerialNumber(), newProduct);
             writeProducts();
         }
 
         return isReplaced;
     }
 
-    private void writeProducts() {
-        binaryFileManager.clearFile();
-        for(Product product:allProducts.values())
-            binaryFileManager.writeProduct(product);
+    @Override
+    public boolean removeProduct(String sku) {
+        boolean success = false;
+        if (allProducts.containsKey(sku)) {
+            String currName = allProducts.get(sku).getCustomer().getName();
+            names.remove(currName);
+            allProducts.remove(sku);
+            success = removeProductFromFile(sku);
+        }
+        return success;
     }
 
-    protected Map<String, Product> getCurrentMap() {
-        return allProducts;
+    private boolean removeProductFromFile(String sku) {
+        return binaryFileManager.removeProduct(sku);
     }
 
-    protected Product getProduct(String serialNumber) {
-        return allProducts.get(serialNumber);
+    @Override
+    public Product getProduct(String sku) {
+        return allProducts.get(sku);
     }
 
-    protected void setSaveAndPrintAs(int order) {
-        if(saveAndPrintAs == DEFAULT) {
-            saveAndPrintAs = order;
+    @Override
+    public void setOrderBy(int orderBy) {
+        if (saveAndPrintAs == DEFAULT) {
+            saveAndPrintAs = orderBy;
 
             allProducts = createMap();
         }
     }
 
-    private Comparator<String> getComparatorByOrder(int order) {
+    @Override
+    public ArrayList<String> getAllConfirmedCustomerNames() {
+        return names;
+    }
 
-        StringAscComparator comparator = new StringAscComparator();
+    @Override
+    public void undo() {
+        setStore(previous);
+        writeAllFromMapToFile();
+    }
 
-        if (order == ASC)
-            return comparator;
+    @Override
+    public ArrayList<Product> getAllProducts() {
+        return new ArrayList<>(allProducts.values());
+    }
 
-        return comparator.reversed();
+    @Override
+    public void sendSaleMessage(String msg) {
+        sender.setMessage(msg);
+        sender.SendAll();
     }
 
     private Map<String, Product> createMap() {
         // also used to clone the current Map
         Map<String, Product> currentState;
 
-        switch(saveAndPrintAs){
+        switch (saveAndPrintAs) {
             case ASC:
             case DESC:
                 currentState = new TreeMap<>(getComparatorByOrder(saveAndPrintAs));
@@ -125,52 +138,65 @@ public class Store {
         return currentState;
     }
 
-    protected void setStore(Memento m) {
-        allProducts = new LinkedHashMap<>(m.getProducts());
-    }
-
-    protected Memento createMemento() {
-        return new Memento(createMap());
-    }
-
-    protected void writeAllFromMapToFile() {
+    private void writeProducts() {
         binaryFileManager.clearFile();
-        for(Product product : allProducts.values()){
+        for (Product product : allProducts.values())
+            binaryFileManager.writeProduct(product);
+    }
+
+    private Comparator<String> getComparatorByOrder(int order) {
+        StringAscComparator comparator = new StringAscComparator();
+        if (order == ASC)
+            return comparator;
+
+        return comparator.reversed();
+    }
+
+    private void writeAllFromMapToFile() {
+        binaryFileManager.clearFile();
+        for (Product product : allProducts.values()) {
             binaryFileManager.writeProduct(product);
         }
     }
 
-    public ArrayList<Product> getProductList() {
+//    private Map<String, Product> getCurrentMap() {
+//        return allProducts;
+//    }
 
-        return new ArrayList<>(allProducts.values());
+    private Memento createMemento() {
+        return new Memento(createMap());
     }
 
-    public boolean removeProductFromFile(String serialNumber){
-        return binaryFileManager.removeProduct(serialNumber);
+    private void setStore(Memento m) {
+        allProducts = new LinkedHashMap<>(m.getProducts());
     }
 
-    public boolean removeProduct(String serialNumber){
-        boolean success = false;
-        if (allProducts.containsKey(serialNumber)) {
-            allProducts.remove(serialNumber);
-            success = removeProductFromFile(serialNumber);
-        }
-        return success;
-    }
-
-    public Sender getSender() {
-        return sender;
-    }
-
-    protected static class Memento {
-        private final Map<String, Product> products;
-
-        private Memento(Map<String, Product> products){
-            this.products = products;
-        }
-
-        private Map<String, Product> getProducts() {
-            return products;
+    private void loadFromFile() {
+        allProducts = binaryFileManager.readProducts();
+        Customer tmp;
+        for (Product p : allProducts.values()) {
+            tmp = p.getCustomer();
+            if (tmp != null) {
+                if (tmp.getEventOnSales()) {
+                    sender.attach(tmp);
+                    names.add(tmp.getName());
+                }
+            }
         }
     }
+
+/*    private void loadAllPromotionNames() {
+        names = new ArrayList<>();
+        String name;
+
+        Customer customer;
+        for (Product product : getAllProducts()) {
+            customer = product.getCustomer();
+            name = customer.getName();
+            if (customer.getEventOnSales()) {
+                if (!names.contains(name))
+                    names.add(customer.getName());
+            }
+        }
+    }*/
 }

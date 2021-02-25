@@ -175,7 +175,14 @@ public class AddProduct extends SecondaryWindow {
         return productNameTF.getText();
     }
 
-    public double getRetailPrice() {
+    public String getRetailPrice() {
+        return retailPriceTF.getText();
+    }
+
+    public String getWholesalePrice() {
+        return wholesalePriceTF.getText();
+    }
+/*    public double getRetailPrice() {
         if (!retailPriceTF.getText().isEmpty())
             return Double.parseDouble(retailPriceTF.getText());
         return 0.0;
@@ -185,7 +192,7 @@ public class AddProduct extends SecondaryWindow {
         if (!wholesalePriceTF.getText().isEmpty())
             return Double.parseDouble(wholesalePriceTF.getText());
         return 0.0;
-    }
+    }*/
 
     public String getCustomerName() {
         return nameTF.getText();

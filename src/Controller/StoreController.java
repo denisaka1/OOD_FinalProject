@@ -1,19 +1,23 @@
 package Controller;
 
-import Model.command.StoreCommand;
+import Model.command.SetOrderByCommand;
+import Model.command.Store;
+import Model.command.UndoCommand;
 import View.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 
 public class StoreController {
-    protected StoreCommand storeCommand;
+    protected Store store;
     protected HomeScreen view;
     protected static Runnable checkEnableCancelButton;
     private boolean addedProduct;
+    private Alert alert;
 
-    public StoreController(HomeScreen view, StoreCommand storeCommand) {
+    public StoreController(HomeScreen view, Store store) {
         this.view = view;
-        this.storeCommand = storeCommand;
+        this.store = store;
 
         assignAllEvents();
 
@@ -31,7 +35,8 @@ public class StoreController {
 
     private void eventOrderButton() {
         EventHandler<ActionEvent> eventForOrderButton = event -> {
-            storeCommand.saveProductByOrderInStore(view.getOrderChoice());
+            new SetOrderByCommand(store, view.getOrderChoice()).execute();
+//            storeCommand.saveProductByOrderInStore();
             view.closeDialog();
             view.loadMainProgram();
         };
@@ -42,15 +47,20 @@ public class StoreController {
         EventHandler<ActionEvent> eventForOrderButton = event -> {
             AddProduct addProductView = new AddProduct();
             view.update(addProductView);
-            ProductController productController = new ProductController(view, storeCommand, addProductView);
+            ProductController productController = new ProductController(view, store, addProductView);
         };
         view.addEventProductButton(eventForOrderButton);
     }
 
     private void eventCancelButton() {
         EventHandler<ActionEvent> eventForCancelButton = event -> {
-            storeCommand.undoStore();
+//            storeCommand.undoStore();
+            new UndoCommand(store).execute();
             disableCancelButton();
+
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Undo operation performed successfully!");
+            alert.showAndWait();
         };
 
         view.addEventCancelButton(eventForCancelButton);
@@ -60,7 +70,8 @@ public class StoreController {
         EventHandler<ActionEvent> eventForSaleButton = event -> {
             Sale saleView = new Sale();
             view.update(saleView);
-            SaleController orderController = new SaleController(view, storeCommand, saleView);
+            SaleController orderController = new SaleController(view, store, saleView);
+//            SaleController orderController = new SaleController(view, storeCommand, saleView);
         };
         view.addEventSaleButton(eventForSaleButton);
     }
@@ -69,7 +80,8 @@ public class StoreController {
         EventHandler<ActionEvent> eventForProductListButton = event -> {
             ProductList productList = new ProductList();
             view.update(productList);
-            ProductListController productListController = new ProductListController(view, storeCommand, productList);
+            ProductListController productListController = new ProductListController(view, store, productList);
+//            ProductListController productListController = new ProductListController(view, storeCommand, productList);
         };
         view.addEventProductListButton(eventForProductListButton);
     }

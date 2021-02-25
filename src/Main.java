@@ -1,12 +1,12 @@
 import Controller.StoreController;
-import Model.command.StoreCommand;
+import Model.command.Store;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import View.HomeScreen;
 
 public class Main extends Application {
 
-    private final String filename = "data/products.txt";
+    public static final String FILENAME = "data/products.txt";
 
     public static void main(String[] args) {
         launch(args);
@@ -14,8 +14,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        StoreCommand storeCommand = new StoreCommand(filename);
+//        StoreCommand storeCommand = new StoreCommand(filename);
+        Store store = new Store();
         HomeScreen view = new HomeScreen(stage);
-        StoreController controller = new StoreController(view, storeCommand);
+        StoreController controller = new StoreController(view, store);
+//        StoreController controller = new StoreController(view, storeCommand);
     }
 }

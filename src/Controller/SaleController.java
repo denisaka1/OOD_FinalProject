@@ -1,7 +1,9 @@
 package Controller;
 
 import Exceptions.IllegalInputException;
-import Model.command.StoreCommand;
+import Model.command.GetAllConfirmedCustomerNamesCommand;
+import Model.command.SendSaleMessageCommand;
+import Model.command.Store;
 import View.HomeScreen;
 import View.Sale;
 import javafx.application.Platform;
@@ -15,8 +17,9 @@ public class SaleController extends SecondaryWindowController {
     private boolean shuttingDown;
     private int status = 0, nameCounter = 0;
 
-    public SaleController(HomeScreen homeScreenView, StoreCommand storeCommand, Sale saleView) {
-        super(homeScreenView, storeCommand, saleView);
+    public SaleController(HomeScreen homeScreenView, Store store, Sale saleView) {
+//    public SaleController(HomeScreen homeScreenView, StoreCommand storeCommand, Sale saleView) {
+        super(homeScreenView, store, saleView);
         this.saleView = saleView;
         eventSendButton();
     }
@@ -29,8 +32,14 @@ public class SaleController extends SecondaryWindowController {
                 if (msg.isEmpty())
                     throw new IllegalInputException("Please fill in the message box");
 
-                storeCommand.sendSaleMessageToAllCustomers(saleView.getMsg());
-                ArrayList<String> names = storeCommand.getAllCustomerSalesNames();
+                new SendSaleMessageCommand(store, saleView.getMsg()).execute();
+
+                GetAllConfirmedCustomerNamesCommand confirmedCommand = new GetAllConfirmedCustomerNamesCommand(store);
+                confirmedCommand.execute();
+                ArrayList<String> names = confirmedCommand.get();
+
+//                storeCommand.sendSaleMessageToAllCustomers(saleView.getMsg());
+//                ArrayList<String> names = storeCommand.getAllCustomerSalesNames();
 
                 saleView.addResponse("Sending Messages:", -1);
 

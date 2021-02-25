@@ -1,126 +1,27 @@
 package Model.command;
 
-import Model.observer.Customer;
 import Model.Product;
-import Model.observer.Sender;
 
 import java.util.ArrayList;
 
-public class StoreCommand {
+public interface StoreCommand {
 
-    private Store store;
-    private Store.Memento previous;
-    private ArrayList<String> names;
+    boolean addProduct(Product newProduct);
 
-    public StoreCommand(String filename) {
-        store = new Store(filename);
-        loadAllPromotionNames();
-    }
+    boolean removeProduct(String sku);
 
-    private void loadAllPromotionNames() {
-        names = new ArrayList<>();
-        String name;
+    Product getProduct(String sku);
 
-        if(!store.isEmpty()) {
-            Customer customer;
-            for(Product product: store.getProductList()){
-                customer = product.getCustomer();
-                name = customer.getName();
-                if(customer.getEventOnSales()) {
-                    if(!names.contains(name))
-                        names.add(customer.getName());
-                }
-            }
-        }
-    }
+    void setOrderBy(int orderBy);
 
-    private boolean addProduct(Product product) {
-        Customer customer;
-        previous = store.createMemento();
+    ArrayList<String> getAllConfirmedCustomerNames();
 
-        boolean renewProduct = store.addProduct(product);
+    void undo(); // undo add product
 
-        customer = product.getCustomer();
-        String name;
+    ArrayList<Product> getAllProducts();
 
-        if (customer != null) {
-            name = customer.getName();
-            if (customer.getEventOnSales()){
-                store.getSender().attach(customer);
-                if(!names.contains(name))
-                    names.add(name);
-            }
-        }
+    void sendSaleMessage(String msg);
 
-        return renewProduct;
-    }
-
-    public boolean removeProduct(String serialNumber) {
-        return store.removeProduct(serialNumber);
-    }
-
-    private Product getProduct(String serialNumber) {
-        return store.getProduct(serialNumber);
-    }
-
-    private ArrayList<Product> getAllProducts() {
-        return store.getProductList();
-    }
-
-    /*
-        ASC - 0
-        DESC - 1
-        ByInsert(DEFAULT) - 2
-    */
-    private void saveProductByOrder(int order){
-        store.setSaveAndPrintAs(order);
-    }
-
-    private void undo() {
-        store.setStore(previous);
-        store.writeAllFromMapToFile();
-    }
-
-    private void sendSaleMessage(String msg) {
-        store.getSender().setMessage(msg);
-//        names = store.getSender().SendAll();
-        store.getSender().SendAll();
-    }
-
-    public boolean addProductToStore(Product product){
-        return addProduct(product);
-    }
-
-    public Product getProductFromStore(String serialNumber){
-        return getProduct(serialNumber);
-    }
-
-    public ArrayList<Product> getAllProductsFromStore(){
-        return getAllProducts();
-    }
-
-    public void saveProductByOrderInStore(int order) {
-        saveProductByOrder(order);
-    }
-
-    public void undoStore() {
-        undo();
-    }
-
-    public boolean removeProductFromStore(String serialNumber) {
-        String customerName = store.getProduct(serialNumber).getCustomer().getName();
-        names.remove(customerName);
-
-        return removeProduct(serialNumber);
-    }
-
-    public void sendSaleMessageToAllCustomers(String msg) {
-        sendSaleMessage(msg);
-    }
-
-    public ArrayList<String> getAllCustomerSalesNames() {
-        return names;
-    }
-
-    public void setOrderToStore(int order) { store.setOrderBy(order); }
+    // todo: need ? (if not - delete here, Store, and IsProductEmptyCommand)
+    boolean isProductEmpty();
 }
