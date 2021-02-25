@@ -40,7 +40,7 @@ public class Store implements StoreCommand {
     public boolean addProduct(Product newProduct) {
         previous = createMemento();
 
-        String serialNumber = newProduct.getSerialNumber();
+        String serialNumber = newProduct.getSku();
         boolean isReplaced = false;
 
         // True - Renew\Replace
@@ -61,7 +61,7 @@ public class Store implements StoreCommand {
                 }
             }
 
-            allProducts.put(newProduct.getSerialNumber(), newProduct);
+            allProducts.put(newProduct.getSku(), newProduct);
             writeProducts();
         }
 
@@ -118,6 +118,16 @@ public class Store implements StoreCommand {
     public void sendSaleMessage(String msg) {
         sender.setMessage(msg);
         sender.SendAll();
+    }
+
+    @Override
+    public boolean removeAllProduct() {
+//        binaryFileManager.clearFile();
+        ArrayList<Product> prodList = getAllProducts();
+        for (Product product : prodList)
+            if (!removeProduct(product.getSku()))
+                return false;
+        return true;
     }
 
     private Map<String, Product> createMap() {

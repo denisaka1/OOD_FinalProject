@@ -22,6 +22,8 @@ public interface StoreCommand {
 
     void sendSaleMessage(String msg);
 
+    boolean removeAllProduct();
+
     // todo: need ? (if not - delete here, Store, and IsProductEmptyCommand)
     boolean isProductEmpty();
 }

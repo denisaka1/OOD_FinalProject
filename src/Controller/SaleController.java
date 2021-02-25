@@ -81,7 +81,7 @@ public class SaleController extends BackButtonController {
         loadingThread = new Thread(() -> {
             while (!shuttingDown && !Thread.interrupted()) {
                 Platform.runLater(() -> {
-                    if (status == 3)
+                    if (status == 4)
                         status = 0;
                     status++;
 

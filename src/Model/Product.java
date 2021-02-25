@@ -9,40 +9,40 @@ public class Product implements Serializable {
 
     // 0 - default
     private static final long serialVersionUID = 7526472295622776141L;
-    private String serialNumber; // SKU
+    private String sku;
     private String productName;
-    private double retailPrice; // for customer
-    private double wholesalePrice; // for store
+    private int retailPrice; // for customer
+    private int wholesalePrice; // for store
 
     private Customer customer;
 
-    public Product(String serialNumber, String name, double retailPrice, double wholesalePrice, Customer customer) {
-        this.serialNumber = serialNumber;
-        setSerialNumber(serialNumber);
+    public Product(String sku, String name, int retailPrice, int wholesalePrice, Customer customer) {
+//        this.sku = sku;
+        setSku(sku);
         setRetailPrice(retailPrice);
         setWholesalePrice(wholesalePrice);
         this.productName = name;
         this.customer = customer;
     }
 
-    public Product(String serialNumber) {
-        this(serialNumber, null, 0, 0, null);
+    public Product(String sku) {
+        this(sku, null, 0, 0, null);
     }
 
     /************ Get Functions ***********/
-    public String getSerialNumber() {
-        return serialNumber;
+    public String getSku() {
+        return sku;
     }
 
     public String getProductName() {
         return productName;
     }
 
-    public double getRetailPrice() {
+    public int getRetailPrice() {
         return retailPrice;
     }
 
-    public double getWholesalePrice() {
+    public int getWholesalePrice() {
         return wholesalePrice;
     }
 
@@ -79,27 +79,27 @@ public class Product implements Serializable {
     }
 
     /************ Set Functions ***********/
-    private void setSerialNumber(String serialNumber){
-        if(serialNumber.length() >= 1)
-            this.serialNumber = serialNumber;
+    private void setSku(String sku){
+        if(sku.length() >= 1)
+            this.sku = sku;
         else{
-            new IllegalInputException("Serial number length can't be less than 1!")
+            new IllegalInputException("SKU length can't be less than 1!")
                     .showErrorMessage();
         }
     }
 
-    private void setRetailPrice(double retailPrice) {
+    private void setRetailPrice(int retailPrice) {
         this.retailPrice = Math.max(retailPrice, 0);
     }
 
-    private void setWholesalePrice(double wholesalePrice) {
+    private void setWholesalePrice(int wholesalePrice) {
         this.wholesalePrice = Math.max(wholesalePrice, 0);
     }
 
     @Override
     public String toString() {
         return "Product" +
-                "\nSKU: " + serialNumber +
+                "\nSKU: " + sku +
                 "\nProduct Name: " + productName +
                 "\nRetail Price: " + retailPrice +
                 "\nWholesale Price: " + wholesalePrice +

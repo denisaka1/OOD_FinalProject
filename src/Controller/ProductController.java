@@ -43,7 +43,7 @@ public class ProductController extends BackButtonController {
                     String phoneNumber = addProductView.getPhoneNumber();
                     boolean promNotification = addProductView.getPromotionNotification();
 
-                    double doubleRetailPrice = 0, doubleWholesalePrice = 0;
+                    int doubleRetailPrice = 0, doubleWholesalePrice = 0;
 
                     if (promNotification && (phoneNumber.isEmpty() || customerName.isEmpty()))
                         throw new IllegalInputException("To receive notifications about promotions please enter a Customer");
@@ -55,17 +55,17 @@ public class ProductController extends BackButtonController {
                         throw new IllegalInputException("Please fill a legal israeli cell phone number without hyphens");
 
                     if (!retailPrice.isEmpty()) {
-                        if (!retailPrice.matches("([0-9]*)\\.([0-9]*)") && !retailPrice.matches("[0-9]*"))
+                        if (!retailPrice.matches("[0-9]*"))
                             throw new IllegalInputException("Please fill a legal retail price");
                         else
-                            doubleRetailPrice = Double.parseDouble(retailPrice);
+                            doubleRetailPrice = Integer.parseInt(retailPrice);
                     }
 
                     if (!wholesalePrice.isEmpty()) {
-                        if (!wholesalePrice.matches("([0-9]*)\\.([0-9]*)") && !wholesalePrice.matches("[0-9]*"))
+                        if (!wholesalePrice.matches("[0-9]*"))
                             throw new IllegalInputException("Please fill a wholesale retail price");
                         else
-                            doubleWholesalePrice = Double.parseDouble(wholesalePrice);
+                            doubleWholesalePrice = Integer.parseInt(wholesalePrice);
                     }
 
                     Customer customer = new Customer(customerName, phoneNumber, promNotification);

@@ -25,7 +25,7 @@ public class FileHandler implements Iterable<Product> {
         }
     }
 
-    public boolean removeProduct(String serialNumber) {
+    public boolean removeProduct(String sku) {
         // todo: handle null itr.next()
         Iterator<Product> itr = iterator();
         boolean isRemoved = false;
@@ -33,7 +33,7 @@ public class FileHandler implements Iterable<Product> {
 
         while(itr.hasNext() && !isRemoved) {
             product = itr.next();
-            if(serialNumber.equals(product.getSerialNumber())) {
+            if(sku.equals(product.getSku())) {
                 itr.remove();
                 isRemoved = true;
             }
@@ -49,7 +49,7 @@ public class FileHandler implements Iterable<Product> {
 
         while(itr.hasNext()) {
             temp = itr.next();
-            result.put(temp.getSerialNumber(), temp);
+            result.put(temp.getSku(), temp);
         }
 
         return result;
@@ -90,7 +90,7 @@ public class FileHandler implements Iterable<Product> {
     }
 
     // todo: There is no need
-    public void replaceProductBySerialNumber(String serialNumber, Product product) {
+    public void replaceProductBySerialNumber(String sku, Product product) {
         // todo: handle null itr.next()
 
         Iterator<Product> itr = iterator();
@@ -100,7 +100,7 @@ public class FileHandler implements Iterable<Product> {
         while(itr.hasNext()){
             try {
                 prev = readPos;
-                if(serialNumber.equals(itr.next().getSerialNumber())) {
+                if(sku.equals(itr.next().getSku())) {
                     curr = raf.getFilePointer();
 
                     byte[] byteProd = Product.serialize(product);

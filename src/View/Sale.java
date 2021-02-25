@@ -93,7 +93,7 @@ public class Sale extends BackButtonView {
             responsesTA.setText(responseTest + "\nSending completed successfully");
         else {
             String dots = "";
-            for (int i = 0; i < status; i++)
+            for (int i = 1; i < status; i++)
                 dots += ".";
             responsesTA.setText(responseTest + "\nWaiting for response" + dots);
         }

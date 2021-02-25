@@ -2,22 +2,17 @@ package Controller;
 
 import Exceptions.IllegalInputException;
 import Model.Product;
-import Model.command.GetAllProductsCommand;
-import Model.command.GetProductCommand;
-import Model.command.RemoveProductCommand;
-import Model.command.Store;
+import Model.command.*;
 import View.HomeScreen;
 import View.ProductList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 
 public class ProductListController extends BackButtonController {
     private ProductList productList;
@@ -25,6 +20,7 @@ public class ProductListController extends BackButtonController {
     private Scene quickShowScene;
     private VBox quickVBox;
     private double profit;
+    private Alert alert;
 
     public ProductListController(HomeScreen homeScreenView, Store store, ProductList productList) {
         super(homeScreenView, store, productList);
@@ -35,6 +31,7 @@ public class ProductListController extends BackButtonController {
         eventSearchButton();
         eventProductShow();
         eventForBackToMainButton();
+        eventRemoveAllButton();
     }
 
     private void setProductInListView() {
@@ -55,7 +52,8 @@ public class ProductListController extends BackButtonController {
     }
 
     private void addRemoveButtonToTable() {
-        TableColumn<Product, Void> remCol = new TableColumn("X");
+        TableColumn<Product, Void> remCol = new TableColumn();
+        remCol.setGraphic(productList.getRemoveAllButton());
 
         Callback<TableColumn<Product, Void>, TableCell<Product, Void>> cellFactory = new Callback<TableColumn<Product, Void>, TableCell<Product, Void>>() {
             @Override
@@ -66,11 +64,19 @@ public class ProductListController extends BackButtonController {
                         revBtn.setOnAction((ActionEvent event) -> {
                             closeQuick();
 //                            storeCommand.removeProductFromStore(storeCommand.removeProductFromStore());
-                            new RemoveProductCommand(store, getTableView().getItems().get(getIndex()).getSerialNumber()).execute();
-                            setProductInListView();
-                            HomeScreen.ACTION_TAKEN = true;
+                            RemoveProductCommand removeProductCommand = new RemoveProductCommand(store, getTableView().getItems().get(getIndex()).getSku());
+                            removeProductCommand.execute();
+                            if (removeProductCommand.isRemoved()) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setContentText("Product Removed!");
+                                alert.showAndWait();
+
+                                setProductInListView();
+                                HomeScreen.ACTION_TAKEN = true;
+                            } else new IllegalInputException("An error occurred while removing product").showErrorMessage();
                         });
                         revBtn.getStyleClass().add("button-remove");
+                        revBtn.setTooltip(new Tooltip("Remove"));
                         setStyle("-fx-alignment: center;");
                     }
 
@@ -152,6 +158,22 @@ public class ProductListController extends BackButtonController {
     private void eventQuickCloseButton() {
         EventHandler<ActionEvent> eventForQuickCloseButton = event -> closeQuick();
         productList.addEventToQuickCloseButton(eventForQuickCloseButton);
+    }
+
+    private void eventRemoveAllButton() {
+        EventHandler<ActionEvent> eventForRemoveAllButton = event -> {
+            RemoveAllProductCommand removeAllProductCommand = new RemoveAllProductCommand(store);
+            removeAllProductCommand.execute();
+            if (removeAllProductCommand.isAllRemoved()) {
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("All Product Removed!");
+                alert.showAndWait();
+
+                setProductInListView();
+                HomeScreen.ACTION_TAKEN = true;
+            } else new IllegalInputException("An error occurred while removing products").showErrorMessage();
+        };
+        productList.addEventToRemoveAllButton(eventForRemoveAllButton);
     }
 
     private void closeQuick() {

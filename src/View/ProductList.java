@@ -17,7 +17,7 @@ public class ProductList extends BackButtonView {
     private HBox listViewHBox, searchBarHBox, profitHBox;
     private VBox quickShowVBox;
     private TextField searchTF;
-    private Button searchBtn, quickCloseButton;
+    private Button searchBtn, quickCloseButton, removeAllButton;
     private Text profit, profitLabel, quickSortText;
     private final Insets SEARCHBAR_INSETS = new Insets(0, 10, 0, 0);
     private final Insets TABLE_INSETS = new Insets(10, 0, 5, 0);
@@ -32,6 +32,13 @@ public class ProductList extends BackButtonView {
         assignSearchField();
         assignSearchButton();
         assignProfit();
+        assignRemoveAllButton();
+    }
+
+    private void assignRemoveAllButton() {
+        removeAllButton = new Button("");
+        removeAllButton.getStyleClass().add("button-remove");
+        removeAllButton.setTooltip(new Tooltip("Remove All Products"));
     }
 
     private void assignSearchField() {
@@ -72,9 +79,9 @@ public class ProductList extends BackButtonView {
         TableColumn<Product, String> prodName           = new TableColumn<>("Name");
         TableColumn<Product, String> prodRetailPrice    = new TableColumn<>("Retail");
         TableColumn<Product, String> prodWholesalePrice = new TableColumn<>("Wholesale");
-        TableColumn<Product, String> cusName          = new TableColumn<>("Name");
-        TableColumn<Product, String> cusPhone         = new TableColumn<>("Phone");
-        TableColumn<Product, String> cusPromotions    = new TableColumn<>("Sale?");
+        TableColumn<Product, String> cusName            = new TableColumn<>("Name");
+        TableColumn<Product, String> cusPhone           = new TableColumn<>("Phone");
+        TableColumn<Product, String> cusPromotions      = new TableColumn<>("Sale?");
 
         product .getColumns().addAll(prodSku, prodName, prodRetailPrice, prodWholesalePrice);
         customer.getColumns().addAll(cusName, cusPhone, cusPromotions);
@@ -92,7 +99,7 @@ public class ProductList extends BackButtonView {
         centerColumn(cusPromotions);
 
         // Values
-        prodSku             .setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+        prodSku             .setCellValueFactory(new PropertyValueFactory<>("sku"));
         prodName            .setCellValueFactory(new PropertyValueFactory<>("productName"));
         prodRetailPrice     .setCellValueFactory(new PropertyValueFactory<>("retailPrice"));
         prodWholesalePrice  .setCellValueFactory(new PropertyValueFactory<>("wholesalePrice"));
@@ -135,6 +142,14 @@ public class ProductList extends BackButtonView {
         quickShowVBox.setAlignment(Pos.CENTER);
 
         return quickShowVBox;
+    }
+
+    public Button getRemoveAllButton() {
+        return removeAllButton;
+    }
+
+    public void addEventToRemoveAllButton(EventHandler<ActionEvent> event) {
+        removeAllButton.setOnAction(event);
     }
 
     public void addEventSearchButton(EventHandler<ActionEvent> event) {
