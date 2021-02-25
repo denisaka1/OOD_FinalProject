@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 
-public class ProductController extends SecondaryWindowController {
+public class ProductController extends BackButtonController {
     private AddProduct addProductView;
 //    private StoreCommand storeCommand;
     private Store store;

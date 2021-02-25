@@ -5,11 +5,11 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
-public class SecondaryWindow {
+public class BackButtonView {
     protected Button backToMainButton;
     protected VBox mainView, backToMainVBox;
 
-    public SecondaryWindow() {
+    public BackButtonView() {
         mainView = new VBox();
         backToMainVBox = new VBox();
         assignAll();

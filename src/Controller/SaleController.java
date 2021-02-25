@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import java.util.ArrayList;
 
-public class SaleController extends SecondaryWindowController {
+public class SaleController extends BackButtonController {
     private Sale saleView;
     private Thread loadingThread;
     private boolean shuttingDown;

@@ -19,7 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class ProductListController extends SecondaryWindowController {
+public class ProductListController extends BackButtonController {
     private ProductList productList;
     private Stage quickStage;
     private Scene quickShowScene;

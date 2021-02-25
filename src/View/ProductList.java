@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class ProductList extends SecondaryWindow {
+public class ProductList extends BackButtonView {
     private TableView tableView;
     private HBox listViewHBox, searchBarHBox, profitHBox;
     private VBox quickShowVBox;

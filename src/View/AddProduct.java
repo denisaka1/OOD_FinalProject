@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class AddProduct extends SecondaryWindow {
+public class AddProduct extends BackButtonView {
     private TextField nameTF, phoneNumberTF, skuTF, productNameTF, retailPriceTF, wholesalePriceTF;
     private HBox headerHBox, orderHBox, nameHBox, phoneNumberHBox, skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, saleHBox;
     private CheckBox saleCB;

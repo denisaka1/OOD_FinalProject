@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class Sale extends SecondaryWindow  {
+public class Sale extends BackButtonView {
     private HBox sendHBox, responsesHBox, headerHBox;
     private Button sendButton;
     private TextArea msgTA, responsesTA;

@@ -87,7 +87,7 @@ public class HomeScreen extends MainButtons {
         }
     }
 
-    public void update(SecondaryWindow newMainView) {
+    public void update(BackButtonView newMainView) {
         borderPane.getChildren().clear();
         borderPane.setCenter(newMainView.update());
     }
