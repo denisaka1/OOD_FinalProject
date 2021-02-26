@@ -11,6 +11,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class Sale extends BackButtonView {
+    private static final String SALE_TITLE_TEXT = "Notification for NEW SALE";
+    private static final String SEND_BUTTON_TEXT = "Send";
+    private static final String SENDING_COMPLETED = "Sending completed successfully";
+    private static final String PENDING_RESPONSE = "Waiting for response";
     private HBox sendHBox, responsesHBox, headerHBox;
     private Button sendButton;
     private TextArea msgTA, responsesTA;
@@ -34,12 +38,12 @@ public class Sale extends BackButtonView {
     private void setSaleTitle() {
         headerHBox = new HBox();
         saleTitle = new Text();
-        saleTitle.setText("Notification for NEW SALE");
+        saleTitle.setText(SALE_TITLE_TEXT);
         saleTitle.getStyleClass().add("text-header");
 
         headerHBox.getChildren().addAll(backToMainVBox, saleTitle);
-        headerHBox.setMargin(saleTitle, SALE_INSETS);
-        headerHBox.setMargin(backToMainVBox, BACK_INSETS);
+        HBox.setMargin(saleTitle, SALE_INSETS);
+        HBox.setMargin(backToMainVBox, BACK_INSETS);
         headerHBox.setAlignment(Pos.CENTER);
     }
 
@@ -48,8 +52,8 @@ public class Sale extends BackButtonView {
         assignSendButton();
         assignMsgTextArea();
         sendHBox.getChildren().addAll(msgTA, sendButton);
-        sendHBox.setMargin(sendButton, SEND_INSETS);
-        sendHBox.setMargin(msgTA, TOP_INSETS);
+        HBox.setMargin(sendButton, SEND_INSETS);
+        HBox.setMargin(msgTA, TOP_INSETS);
         sendHBox.setAlignment(Pos.CENTER);
     }
 
@@ -59,7 +63,7 @@ public class Sale extends BackButtonView {
         responsesTA.setEditable(false);
         responsesTA.getStyleClass().add("text-area-response");
         responsesHBox.getChildren().add(responsesTA);
-        responsesHBox.setMargin(responsesTA, TOP_INSETS);
+        HBox.setMargin(responsesTA, TOP_INSETS);
         responsesHBox.setAlignment(Pos.CENTER);
     }
 
@@ -69,7 +73,7 @@ public class Sale extends BackButtonView {
     }
 
     private void assignSendButton() {
-        sendButton = new Button("Send");
+        sendButton = new Button(SEND_BUTTON_TEXT);
         sendButton.getStyleClass().add("button-send");
     }
 
@@ -90,12 +94,12 @@ public class Sale extends BackButtonView {
 
     public void loadingBar(int status) {
         if (status == -1)
-            responsesTA.setText(responseTest + "\nSending completed successfully");
+            responsesTA.setText(responseTest + "\n" + SENDING_COMPLETED);
         else {
             String dots = "";
             for (int i = 1; i < status; i++)
                 dots += ".";
-            responsesTA.setText(responseTest + "\nWaiting for response" + dots);
+            responsesTA.setText(responseTest + "\n" + PENDING_RESPONSE + dots);
         }
     }
 

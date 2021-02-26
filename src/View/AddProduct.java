@@ -12,6 +12,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class AddProduct extends BackButtonView {
+    private static final String RETAIL_PRICE_TXT = "Enter Retail Price";
+    private static final String ORDER_TITLE_TXT = "New Order";
+    private static final String SKU_TXT = "Enter SKU";
+    private static final String PRODUCT_TXT = "Enter Product Name";
+    private static final String WHOLESALE_TXT = "Enter Wholesale Price";
+    private static final String NAME_TXT = "Enter Customer Name";
+    private static final String PHONE_TXT = "Enter Phone Number";
+    private static final String ORDER_BUTTON_TXT = "Add!";
+    private static final String SALE_TXT = "Notification on promotions?";
     private TextField nameTF, phoneNumberTF, skuTF, productNameTF, retailPriceTF, wholesalePriceTF;
     private HBox headerHBox, orderHBox, nameHBox, phoneNumberHBox, skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, saleHBox;
     private CheckBox saleCB;
@@ -40,43 +49,22 @@ public class AddProduct extends BackButtonView {
         setOrderTitle();
     }
 
-
    private void setOrderTitle() {
        headerHBox = new HBox();
        orderTitle = new Text();
-       orderTitle.setText("New Order");
+       orderTitle.setText(ORDER_TITLE_TXT);
        orderTitle.getStyleClass().add("text-header");
 
        headerHBox.getChildren().addAll(backToMainVBox, orderTitle);
-       headerHBox.setMargin(orderTitle, ORDER_INSETS);
-       headerHBox.setMargin(backToMainVBox, BACK_INSETS);
+       HBox.setMargin(orderTitle, ORDER_INSETS);
+       HBox.setMargin(backToMainVBox, BACK_INSETS);
        headerHBox.setAlignment(Pos.CENTER);
    }
-
-/*    private void setProductTitle() {
-        skuHBox = new HBox();
-        skuTF = new TextField();
-        skuTF.setPromptText("Enter SKU");
-        skuTF.setFont(BUTTONS_FONT);
-        skuTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
-        skuHBox.getChildren().addAll(skuTF);
-    }
-
-    private void setCustomerTitle() {
-        skuHBox = new HBox();
-        skuTF = new TextField();
-        skuTF.setPromptText("Enter SKU");
-        skuTF.setFont(BUTTONS_FONT);
-        skuTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
-        skuHBox.getChildren().addAll(skuTF);
-    }*/
 
     private void setSKUField() {
         skuHBox = new HBox();
         skuTF = new TextField();
-        skuTF.setPromptText("Enter SKU");
-//        skuTF.setFont(BUTTONS_FONT);
-//        skuTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        skuTF.setPromptText(SKU_TXT);
         skuHBox.getChildren().addAll(skuTF);
         skuHBox.setAlignment(Pos.CENTER);
     }
@@ -84,9 +72,7 @@ public class AddProduct extends BackButtonView {
     private void setProductNameField() {
         productNameHBox = new HBox();
         productNameTF = new TextField();
-        productNameTF.setPromptText("Enter Product Name");
-//        productNameTF.setFont(BUTTONS_FONT);
-//        productNameTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        productNameTF.setPromptText(PRODUCT_TXT);
         productNameHBox.getChildren().addAll(productNameTF);
         productNameHBox.setAlignment(Pos.CENTER);
 
@@ -95,9 +81,7 @@ public class AddProduct extends BackButtonView {
     private void setRetailPriceField() {
         retailPriceHBox = new HBox();
         retailPriceTF = new TextField();
-        retailPriceTF.setPromptText("Enter Retail Price");
-//        retailPriceTF.setFont(BUTTONS_FONT);
-//        retailPriceTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        retailPriceTF.setPromptText(RETAIL_PRICE_TXT);
         retailPriceHBox.getChildren().addAll(retailPriceTF);
         retailPriceHBox.setAlignment(Pos.CENTER);
 
@@ -106,9 +90,7 @@ public class AddProduct extends BackButtonView {
     private void setWholesalePriceField() {
         wholesalePriceHBox = new HBox();
         wholesalePriceTF = new TextField();
-        wholesalePriceTF.setPromptText("Enter Wholesale Price");
-//        wholesalePriceTF.setFont(BUTTONS_FONT);
-//        wholesalePriceTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        wholesalePriceTF.setPromptText(WHOLESALE_TXT);
         wholesalePriceHBox.getChildren().addAll(wholesalePriceTF);
         wholesalePriceHBox.setAlignment(Pos.CENTER);
 
@@ -117,9 +99,7 @@ public class AddProduct extends BackButtonView {
     private void setNameField() {
         nameHBox = new HBox();
         nameTF = new TextField();
-        nameTF.setPromptText("Enter Customer Name");
-//        nameTF.setFont(BUTTONS_FONT);
-//        nameTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        nameTF.setPromptText(NAME_TXT);
         nameHBox.getChildren().addAll(nameTF);
         nameHBox.setAlignment(Pos.CENTER);
 
@@ -128,9 +108,7 @@ public class AddProduct extends BackButtonView {
     private void setPhoneNumberField() {
         phoneNumberHBox = new HBox();
         phoneNumberTF = new TextField();
-        phoneNumberTF.setPromptText("Enter Phone Number");
-//        phoneNumberTF.setFont(BUTTONS_FONT);
-//        phoneNumberTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        phoneNumberTF.setPromptText(PHONE_TXT);
         phoneNumberHBox.getChildren().addAll(phoneNumberTF);
         phoneNumberHBox.setAlignment(Pos.CENTER);
 
@@ -138,7 +116,7 @@ public class AddProduct extends BackButtonView {
 
     private void assignOrderButton() {
         orderHBox = new HBox();
-        orderButton = new Button("Add!");
+        orderButton = new Button(ORDER_BUTTON_TXT);
         orderButton.getStyleClass().add("button-order");
         orderHBox.getChildren().add(orderButton);
         orderHBox.setAlignment(Pos.CENTER);
@@ -147,22 +125,20 @@ public class AddProduct extends BackButtonView {
     private void setSaleField() {
         saleHBox = new HBox();
         saleCB = new CheckBox();
-        saleCB.setText("Notification on promotions?");
-//        saleCB.setFont(BUTTONS_FONT);
-//        saleCB.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        saleCB.setText(SALE_TXT);
         saleHBox.getChildren().addAll(saleCB);
-        saleHBox.setMargin(saleCB, SALE_INSETS);
+        HBox.setMargin(saleCB, SALE_INSETS);
     }
 
     @Override
     public VBox update() {
         mainView.getChildren().clear();
         mainView.getChildren().addAll(headerHBox, skuHBox, productNameHBox, retailPriceHBox, wholesalePriceHBox, nameHBox, phoneNumberHBox, saleHBox, orderHBox);
-        mainView.setMargin(skuHBox, TEXT_FIELD_INSETS);
-        mainView.setMargin(productNameHBox, TEXT_FIELD_INSETS);
-        mainView.setMargin(retailPriceHBox, TEXT_FIELD_INSETS);
-        mainView.setMargin(wholesalePriceHBox, TEXT_FIELD_INSETS);
-        mainView.setMargin(nameHBox, TEXT_FIELD_INSETS);
+        VBox.setMargin(skuHBox, TEXT_FIELD_INSETS);
+        VBox.setMargin(productNameHBox, TEXT_FIELD_INSETS);
+        VBox.setMargin(retailPriceHBox, TEXT_FIELD_INSETS);
+        VBox.setMargin(wholesalePriceHBox, TEXT_FIELD_INSETS);
+        VBox.setMargin(nameHBox, TEXT_FIELD_INSETS);
 
         return mainView;
     }
@@ -182,17 +158,6 @@ public class AddProduct extends BackButtonView {
     public String getWholesalePrice() {
         return wholesalePriceTF.getText();
     }
-/*    public double getRetailPrice() {
-        if (!retailPriceTF.getText().isEmpty())
-            return Double.parseDouble(retailPriceTF.getText());
-        return 0.0;
-    }
-
-    public double getWholesalePrice() {
-        if (!wholesalePriceTF.getText().isEmpty())
-            return Double.parseDouble(wholesalePriceTF.getText());
-        return 0.0;
-    }*/
 
     public String getCustomerName() {
         return nameTF.getText();

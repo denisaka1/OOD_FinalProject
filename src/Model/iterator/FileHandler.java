@@ -1,38 +1,52 @@
 package Model.iterator;
 
-import Exceptions.IllegalInputException;
+import Exceptions.AlertUserException;
 import Model.Product;
 
 import java.io.*;
 import java.util.*;
 
 public class FileHandler implements Iterable<Product> {
+
     private long readPos;
     private long fileSize;
     private RandomAccessFile raf;
+    private String filePath;
+
+    public static final String NULL_PRODUCT_ERROR = "End of iterator!\nCan't read more!";
+    private static final String FILE_NOT_FOUND = "Can't open file in path: ";
+    private static final String FILE_OPERATION_ERROR = "Can't operate on file in path: ";
+    private static final String REMOVE_ERROR = "Can't remove Product that hasn't being read!";
+    private static final String REMOVE_TWICE_ERROR = "Can't remove twice the same object!";
+    private static final String REMOVE_EMPTY_FILE_ERROR = "Can't remove from an empty file!";
+    private static final String END_OF_ITERATOR_ERROR = "You are in the end of the iterator!";
+    private static final String PRODUCT_CLASS_NOT_FOUND_ERROR = "No class Product found!";
 
     public FileHandler(String fileName){
+        filePath = fileName;
+
         try {
-            raf = new RandomAccessFile(fileName, "rw");
+            raf = new RandomAccessFile(filePath, "rw");
             readPos = raf.getFilePointer();
             fileSize = raf.length();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            // todo: handle file not found
+            new AlertUserException(FILE_NOT_FOUND + filePath).showErrorMessage();
         } catch (IOException e) {
-            e.printStackTrace();
-            // todo: handle IOException
+            showIOExceptionMsg();
         }
     }
 
     public boolean removeProduct(String sku) {
-        // todo: handle null itr.next()
         Iterator<Product> itr = iterator();
         boolean isRemoved = false;
         Product product;
 
         while(itr.hasNext() && !isRemoved) {
             product = itr.next();
+            if(product == null){
+                new AlertUserException(NULL_PRODUCT_ERROR).showErrorMessage();
+                break;
+            }
             if(sku.equals(product.getSku())) {
                 itr.remove();
                 isRemoved = true;
@@ -74,8 +88,7 @@ public class FileHandler implements Iterable<Product> {
             fileSize = raf.length(); // resize
 
         } catch (IOException e) {
-            // todo: handle exception
-            e.printStackTrace();
+            showIOExceptionMsg();
         }
     }
 
@@ -85,22 +98,27 @@ public class FileHandler implements Iterable<Product> {
             readPos = 0;
             fileSize = 0;
         } catch (IOException e) {
-            e.printStackTrace();
+            showIOExceptionMsg();
         }
     }
 
-    // todo: There is no need
-    public void replaceProductBySerialNumber(String sku, Product product) {
-        // todo: handle null itr.next()
-
+    public void replaceProductBySerialNumber(Product product) {
         Iterator<Product> itr = iterator();
+        String sku = product.getSku();
+        Product fileProduct;
         long prev;
         long curr;
         readPos = 0;
-        while(itr.hasNext()){
+        boolean isReplaced = false;
+
+        while(itr.hasNext() && !isReplaced){
             try {
                 prev = readPos;
-                if(sku.equals(itr.next().getSku())) {
+                fileProduct = itr.next();
+                if(fileProduct == null){
+                    throw new AlertUserException(NULL_PRODUCT_ERROR);
+                }
+                if(sku.equals(fileProduct.getSku())) {
                     curr = raf.getFilePointer();
 
                     byte[] byteProd = Product.serialize(product);
@@ -121,16 +139,21 @@ public class FileHandler implements Iterable<Product> {
                     // write rest of data
                     raf.write(restOfData);
 
-//                    writePos = raf.getFilePointer();
                     fileSize = raf.getFilePointer();
 
-                    break; // todo: add boolean
-
+                    isReplaced = true;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                showIOExceptionMsg();
+            } catch (AlertUserException e) {
+                e.showErrorMessage();
             }
         }
+
+    }
+
+    private void showIOExceptionMsg() {
+        new AlertUserException(FILE_OPERATION_ERROR + filePath).showErrorMessage();
     }
 
     private class BinaryFileIterator implements Iterator<Product> {
@@ -145,14 +168,11 @@ public class FileHandler implements Iterable<Product> {
         @Override
         public void remove() {
             if(read == 0)
-                new IllegalInputException("Can't remove Product that hasn't being read!")
-                        .showErrorMessage();
+                new AlertUserException(REMOVE_ERROR).showErrorMessage();
             else if(prevRead == read)
-                new IllegalInputException("Can't remove twice the same object!")
-                        .showErrorMessage();
+                new AlertUserException(REMOVE_TWICE_ERROR).showErrorMessage();
             else if (fileSize < read)
-                new IllegalInputException("Can't remove from an empty file!")
-                        .showErrorMessage();
+                new AlertUserException(REMOVE_EMPTY_FILE_ERROR).showErrorMessage();
             else {
                 try {
                     raf.seek(read);
@@ -171,18 +191,16 @@ public class FileHandler implements Iterable<Product> {
                     fileSize = raf.length();
 
                 } catch (IOException e) {
-                    // todo: error in removing
-                    e.printStackTrace();
+                    showIOExceptionMsg();
                 }
             }
         }
 
         @Override
         public Product next() {
-            Product result = null; // todo: indicates to print message to user
+            Product result = null;
             if(!hasNext()) {
-                new IllegalInputException("You are in the end of the iterator!")
-                        .showErrorMessage();
+                new AlertUserException(END_OF_ITERATOR_ERROR).showErrorMessage();
             }
             else{
                 try {
@@ -197,9 +215,9 @@ public class FileHandler implements Iterable<Product> {
 
                     result = product;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    showIOExceptionMsg();
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    new AlertUserException(PRODUCT_CLASS_NOT_FOUND_ERROR).showErrorMessage();
                 }
             }
 

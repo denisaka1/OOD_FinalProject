@@ -13,6 +13,33 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class ProductList extends BackButtonView {
+    private static final String CLOSE_BUTTON = "Close";
+    private static final String REMOVE_ALL_BUTTON = "Remove All Products";
+    private static final String SEARCH_TXT_FIELD = "Enter SKU to search";
+    private static final String PROFIT_LABEL_TEXT = "Total Profit: ";
+    private static final String PROFIT_TEXT = "0";
+
+    private enum TableColumns {
+        PRODUCT("Product"),
+        CUSTOMER("Customer"),
+        SKU("SKU"),
+        NAME("Name"),
+        RETAIL("Retail"),
+        WHOLESALE("Wholesale"),
+        PHONE("Phone"),
+        SALE("Sale?");
+
+        private final String text;
+
+        TableColumns(final String text) {
+            this.text = text;
+        }
+
+        public String toString() {
+            return text;
+        }
+    }
+
     private TableView tableView;
     private HBox listViewHBox, searchBarHBox, profitHBox;
     private VBox quickShowVBox;
@@ -38,29 +65,25 @@ public class ProductList extends BackButtonView {
     private void assignRemoveAllButton() {
         removeAllButton = new Button("");
         removeAllButton.getStyleClass().add("button-remove");
-        removeAllButton.setTooltip(new Tooltip("Remove All Products"));
+        removeAllButton.setTooltip(new Tooltip(REMOVE_ALL_BUTTON));
     }
 
     private void assignSearchField() {
         searchTF = new TextField();
-        searchTF.setPromptText("Enter SKU to search");
-//        searchTF.setFont(BUTTONS_FONT);
-//        searchTF.setMinWidth(TEXT_INPUT_WIDTH_VALUE);
+        searchTF.setPromptText(SEARCH_TXT_FIELD);
     }
 
     private void assignSearchButton() {
         searchBtn = new Button();
         searchBtn.getStyleClass().add("button-search");
-//        searchBtn.setMinWidth(MIN_BUTTON_WIDTH_VALUE);
-//        searchBtn.setFont(BUTTONS_FONT);
     }
 
     private void assignProfit() {
-        profitLabel = new Text("Total Profit: ");
-        profit = new Text("0");
+        profitLabel = new Text(PROFIT_LABEL_TEXT);
+        profit = new Text(PROFIT_TEXT);
         profitHBox = new HBox();
         profitHBox.getChildren().addAll(profitLabel, profit);
-        profitHBox.setMargin(profitLabel, PROFIT_INSETS);
+        HBox.setMargin(profitLabel, PROFIT_INSETS);
     }
 
     private void centerColumn(TableColumn<Product, String> tc) {
@@ -73,15 +96,16 @@ public class ProductList extends BackButtonView {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Set Columns
-        TableColumn<Product, String> product            = new TableColumn<>("Product");
-        TableColumn<Product, String> customer           = new TableColumn<>("Customer");
-        TableColumn<Product, String> prodSku            = new TableColumn<>("SKU");
-        TableColumn<Product, String> prodName           = new TableColumn<>("Name");
-        TableColumn<Product, String> prodRetailPrice    = new TableColumn<>("Retail");
-        TableColumn<Product, String> prodWholesalePrice = new TableColumn<>("Wholesale");
-        TableColumn<Product, String> cusName            = new TableColumn<>("Name");
-        TableColumn<Product, String> cusPhone           = new TableColumn<>("Phone");
-        TableColumn<Product, String> cusPromotions      = new TableColumn<>("Sale?");
+        TableColumn<Product, String> product            = new TableColumn<>(TableColumns.PRODUCT.toString());
+        TableColumn<Product, String> customer           = new TableColumn<>(TableColumns.CUSTOMER.toString());
+        TableColumn<Product, String> prodSku            = new TableColumn<>(TableColumns.SKU.toString());
+        TableColumn<Product, String> prodName           = new TableColumn<>(TableColumns.NAME.toString());
+//        TableColumn<Product, String> prodName           = new TableColumn<>("name");
+        TableColumn<Product, String> prodRetailPrice    = new TableColumn<>(TableColumns.RETAIL.toString());
+        TableColumn<Product, String> prodWholesalePrice = new TableColumn<>(TableColumns.WHOLESALE.toString());
+        TableColumn<Product, String> cusName            = new TableColumn<>(TableColumns.NAME.toString());
+        TableColumn<Product, String> cusPhone           = new TableColumn<>(TableColumns.PHONE.toString());
+        TableColumn<Product, String> cusPromotions      = new TableColumn<>(TableColumns.SALE.toString());
 
         product .getColumns().addAll(prodSku, prodName, prodRetailPrice, prodWholesalePrice);
         customer.getColumns().addAll(cusName, cusPhone, cusPromotions);
@@ -99,6 +123,7 @@ public class ProductList extends BackButtonView {
         centerColumn(cusPromotions);
 
         // Values
+        // todo: productName doesn't show up
         prodSku             .setCellValueFactory(new PropertyValueFactory<>("sku"));
         prodName            .setCellValueFactory(new PropertyValueFactory<>("productName"));
         prodRetailPrice     .setCellValueFactory(new PropertyValueFactory<>("retailPrice"));
@@ -112,7 +137,7 @@ public class ProductList extends BackButtonView {
 
         listViewHBox.setAlignment(Pos.CENTER);
         listViewHBox.getChildren().add(tableView);
-        listViewHBox.setMargin(tableView, TABLE_INSETS);
+        HBox.setMargin(tableView, TABLE_INSETS);
     }
 
     public void setProfit(double newProfit) {
@@ -133,7 +158,7 @@ public class ProductList extends BackButtonView {
     public VBox productShowDialog(Product p) {
         quickShowVBox = new VBox();
         quickSortText = new Text();
-        quickCloseButton = new Button("Close");
+        quickCloseButton = new Button(CLOSE_BUTTON);
 
         quickSortText.setText(p.toString());
         quickShowVBox.getChildren().addAll(quickSortText, quickCloseButton);
@@ -167,8 +192,8 @@ public class ProductList extends BackButtonView {
         searchBarHBox = new HBox();
 
         searchBarHBox.getChildren().addAll(backToMainVBox, searchTF, searchBtn);
-        searchBarHBox.setMargin(backToMainVBox, SEARCHBAR_INSETS);
-        searchBarHBox.setMargin(searchTF, SEARCHBAR_INSETS);
+        HBox.setMargin(backToMainVBox, SEARCHBAR_INSETS);
+        HBox.setMargin(searchTF, SEARCHBAR_INSETS);
         searchBarHBox.setAlignment(Pos.CENTER);
 
         mainView.getChildren().addAll(searchBarHBox, listViewHBox, profitHBox);

@@ -1,9 +1,9 @@
 package Controller;
 
-import Exceptions.IllegalInputException;
+import Exceptions.AlertUserException;
 import Model.command.GetAllConfirmedCustomerNamesCommand;
 import Model.command.SendSaleMessageCommand;
-import Model.command.Store;
+import Model.command.StoreCommand;
 import View.HomeScreen;
 import View.Sale;
 import javafx.application.Platform;
@@ -12,13 +12,16 @@ import javafx.event.EventHandler;
 import java.util.ArrayList;
 
 public class SaleController extends BackButtonController {
-    private Sale saleView;
+    private static final String FILL_MSG_BOX = "Please fill in the message box";
+    private static final String SEND_RESPONSE = "Sending Messages:";
+    private static final String ACCEPT_RESPONSE = " Accepted";
+
+    private final Sale saleView;
     private Thread loadingThread;
     private boolean shuttingDown;
     private int status = 0, nameCounter = 0;
 
-    public SaleController(HomeScreen homeScreenView, Store store, Sale saleView) {
-//    public SaleController(HomeScreen homeScreenView, StoreCommand storeCommand, Sale saleView) {
+    public SaleController(HomeScreen homeScreenView, StoreCommand store, Sale saleView) {
         super(homeScreenView, store, saleView);
         this.saleView = saleView;
         eventSendButton();
@@ -30,7 +33,7 @@ public class SaleController extends BackButtonController {
             try {
                 String msg = saleView.getMsg();
                 if (msg.isEmpty())
-                    throw new IllegalInputException("Please fill in the message box");
+                    throw new AlertUserException(FILL_MSG_BOX);
 
                 new SendSaleMessageCommand(store, saleView.getMsg()).execute();
 
@@ -38,10 +41,7 @@ public class SaleController extends BackButtonController {
                 confirmedCommand.execute();
                 ArrayList<String> names = confirmedCommand.get();
 
-//                storeCommand.sendSaleMessageToAllCustomers(saleView.getMsg());
-//                ArrayList<String> names = storeCommand.getAllCustomerSalesNames();
-
-                saleView.addResponse("Sending Messages:", -1);
+                saleView.addResponse(SEND_RESPONSE, -1);
 
                 if (names.size() > 0)
                     loadingBar();
@@ -49,7 +49,7 @@ public class SaleController extends BackButtonController {
                 new Thread(() -> {
                     for (String name : names) {
                         Platform.runLater(() -> {
-                            saleView.addResponse(name + " Accepted", status);
+                            saleView.addResponse(name + ACCEPT_RESPONSE, status);
 
                             nameCounter++;
                             if (nameCounter >= names.size()) {
@@ -63,15 +63,12 @@ public class SaleController extends BackButtonController {
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
-//                        e.printStackTrace();
                             Thread.currentThread().interrupt();
                         }
                     }
                 }).start();
-            } catch (IllegalInputException i) {
+            } catch (AlertUserException i) {
                 i.showErrorMessage();
-            } catch (Exception e) {
-
             }
         };
         saleView.addEventForSendButton(eventForSendButton);
@@ -91,7 +88,6 @@ public class SaleController extends BackButtonController {
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
-//                    e.printStackTrace();
                     Thread.currentThread().interrupt();
                 }
             }

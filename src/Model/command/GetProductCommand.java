@@ -3,9 +3,9 @@ package Model.command;
 import Model.Product;
 
 public class GetProductCommand implements Command {
-    private StoreCommand storeCommand;
+    private final StoreCommand storeCommand;
     private Product product;
-    private String sku;
+    private final String sku;
 
     public GetProductCommand(StoreCommand storeCommand, String sku) {
         this.storeCommand = storeCommand;

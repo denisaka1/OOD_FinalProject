@@ -1,7 +1,7 @@
 package Model.command;
 
 public class UndoCommand implements Command {
-    private StoreCommand storeCommand;
+    private final StoreCommand storeCommand;
 
     public UndoCommand(StoreCommand storeCommand) {
         this.storeCommand = storeCommand;

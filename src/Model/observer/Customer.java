@@ -1,27 +1,18 @@
 package Model.observer;
 
-import javafx.beans.property.SimpleStringProperty;
-
 import java.io.Serializable;
 
-//public class Customer extends Observer implements Serializable{
-public class Customer implements Serializable, Observer{
+public class Customer implements Serializable, Sender, Receiver{
 
     private static final long serialVersionUID = 7526472295622776147L;
-    private String name;
-    private String phoneNumber;
-    private boolean promotionsNotification;
+    private final String name;
+    private final String phoneNumber;
+    private final boolean promotionsNotification;
 
     public Customer(String name, String phoneNumber, boolean promotionsNotification) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.promotionsNotification = promotionsNotification;
-    }
-
-    @Override
-    public void send() {
-        if(promotionsNotification) {
-        }
     }
 
     public boolean getEventOnSales() {
@@ -43,5 +34,15 @@ public class Customer implements Serializable, Observer{
                 "\nPhone Number: " + phoneNumber +
                 "\nPromotions Notification? " + (promotionsNotification ? "Yes" : "No") +
                 "\n";
+    }
+
+    @Override
+    public void receiveMSG(Sender s, String msg) {
+        sendMSG((Receiver) s, name);
+    }
+
+    @Override
+    public void sendMSG(Receiver r, String s) {
+        r.receiveMSG(this, name);
     }
 }

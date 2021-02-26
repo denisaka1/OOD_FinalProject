@@ -5,7 +5,7 @@ import Model.Product;
 import java.util.ArrayList;
 
 public class GetAllProductsCommand implements Command {
-    private StoreCommand storeCommand;
+    private final StoreCommand storeCommand;
     private ArrayList<Product> allProducts;
 
     public GetAllProductsCommand(StoreCommand storeCommand) {

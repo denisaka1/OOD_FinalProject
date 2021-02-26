@@ -3,7 +3,7 @@ package Model.command;
 import java.util.ArrayList;
 
 public class GetAllConfirmedCustomerNamesCommand implements Command {
-    private StoreCommand storeCommand;
+    private final StoreCommand storeCommand;
     private ArrayList<String> allCustomersNames;
 
     public GetAllConfirmedCustomerNamesCommand(StoreCommand storeCommand) {

@@ -1,6 +1,6 @@
 package Model;
 
-import Exceptions.IllegalInputException;
+import Exceptions.AlertUserException;
 import Model.observer.Customer;
 
 import java.io.*;
@@ -8,16 +8,16 @@ import java.io.*;
 public class Product implements Serializable {
 
     // 0 - default
+    private static final String SKU_ERROR = "SKU length can't be less than 1!";
     private static final long serialVersionUID = 7526472295622776141L;
     private String sku;
-    private String productName;
+    private final String productName;
     private int retailPrice; // for customer
     private int wholesalePrice; // for store
 
-    private Customer customer;
+    private final Customer customer;
 
     public Product(String sku, String name, int retailPrice, int wholesalePrice, Customer customer) {
-//        this.sku = sku;
         setSku(sku);
         setRetailPrice(retailPrice);
         setWholesalePrice(wholesalePrice);
@@ -32,10 +32,6 @@ public class Product implements Serializable {
     /************ Get Functions ***********/
     public String getSku() {
         return sku;
-    }
-
-    public String getProductName() {
-        return productName;
     }
 
     public int getRetailPrice() {
@@ -83,7 +79,7 @@ public class Product implements Serializable {
         if(sku.length() >= 1)
             this.sku = sku;
         else{
-            new IllegalInputException("SKU length can't be less than 1!")
+            new AlertUserException(SKU_ERROR)
                     .showErrorMessage();
         }
     }

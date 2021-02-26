@@ -1,6 +1,6 @@
 package Controller;
 
-import Exceptions.IllegalInputException;
+import Exceptions.AlertUserException;
 import Model.Product;
 import Model.command.*;
 import View.HomeScreen;
@@ -15,14 +15,22 @@ import javafx.util.Callback;
 
 
 public class ProductListController extends BackButtonController {
-    private ProductList productList;
+
+    private static final String PRODUCT_REMOVED = "Product Removed!";
+    private static final String PRODUCT_REMOVE_ERROR = "An error occurred while removing product";
+    private static final String HOVER_REMOVE_TXT = "Remove";
+    private static final String QUICK_STAGE_TITLE = "Quick Show";
+    private static final String PRODUCTS_REMOVED_SUCCESSFULLY = "All Product Removed!";
+    private static final String PRODUCTS_REMOVED_ERROR = "An error occurred while removing products";
+
+    private final ProductList productList;
     private Stage quickStage;
     private Scene quickShowScene;
     private VBox quickVBox;
     private double profit;
     private Alert alert;
 
-    public ProductListController(HomeScreen homeScreenView, Store store, ProductList productList) {
+    public ProductListController(HomeScreen homeScreenView, StoreCommand store, ProductList productList) {
         super(homeScreenView, store, productList);
         this.productList = productList;
 
@@ -63,20 +71,19 @@ public class ProductListController extends BackButtonController {
                     {
                         revBtn.setOnAction((ActionEvent event) -> {
                             closeQuick();
-//                            storeCommand.removeProductFromStore(storeCommand.removeProductFromStore());
                             RemoveProductCommand removeProductCommand = new RemoveProductCommand(store, getTableView().getItems().get(getIndex()).getSku());
                             removeProductCommand.execute();
                             if (removeProductCommand.isRemoved()) {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setContentText("Product Removed!");
+                                alert.setContentText(PRODUCT_REMOVED);
                                 alert.showAndWait();
 
                                 setProductInListView();
                                 HomeScreen.ACTION_TAKEN = true;
-                            } else new IllegalInputException("An error occurred while removing product").showErrorMessage();
+                            } else new AlertUserException(PRODUCT_REMOVE_ERROR).showErrorMessage();
                         });
                         revBtn.getStyleClass().add("button-remove");
-                        revBtn.setTooltip(new Tooltip("Remove"));
+                        revBtn.setTooltip(new Tooltip(HOVER_REMOVE_TXT));
                         setStyle("-fx-alignment: center;");
                     }
 
@@ -103,7 +110,7 @@ public class ProductListController extends BackButtonController {
                 String searchValue = productList.getSearchValue();
                 if (searchValue.isEmpty()) {
                     setProductInListView();
-                    throw new NullPointerException();
+                    return;
                 }
 
                 productList.getTableView().getItems().clear();
@@ -112,18 +119,13 @@ public class ProductListController extends BackButtonController {
                 getProductCommand.execute();
 
                 Product res = getProductCommand.get();
-//                Product res = storeCommand.getProductFromStore();
                 if (res == null)
-                    throw new IllegalInputException("Not found"); // todo: msg
+                    throw new AlertUserException("Product with " + searchValue + " not found!");
 
                 productList.getTableView().getItems().add(res);
-            } catch (IllegalInputException i) {
+            } catch (AlertUserException i) {
                 setProductInListView();
                 i.showErrorMessage();
-            } catch (NullPointerException npe) {
-                // Nothing
-            } catch (Exception e) {
-                // todo: msg
             }
         };
         productList.addEventSearchButton(eventForSearchButton);
@@ -140,9 +142,9 @@ public class ProductListController extends BackButtonController {
                     quickVBox = productList.productShowDialog(rowData);
 
                     quickStage = new Stage();
-                    quickStage.setTitle("Quick Show");
+                    quickStage.setTitle(QUICK_STAGE_TITLE);
                     quickShowScene = new Scene(quickVBox);
-                    quickShowScene.getStylesheets().add(view.css);
+                    quickShowScene.getStylesheets().add(HomeScreen.CSS);
 
                     quickStage.setScene(quickShowScene);
                     quickStage.setResizable(false);
@@ -166,12 +168,12 @@ public class ProductListController extends BackButtonController {
             removeAllProductCommand.execute();
             if (removeAllProductCommand.isAllRemoved()) {
                 alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("All Product Removed!");
+                alert.setContentText(PRODUCTS_REMOVED_SUCCESSFULLY);
                 alert.showAndWait();
 
                 setProductInListView();
                 HomeScreen.ACTION_TAKEN = true;
-            } else new IllegalInputException("An error occurred while removing products").showErrorMessage();
+            } else new AlertUserException(PRODUCTS_REMOVED_ERROR).showErrorMessage();
         };
         productList.addEventToRemoveAllButton(eventForRemoveAllButton);
     }

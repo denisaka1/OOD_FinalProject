@@ -1,9 +1,10 @@
 package Controller;
 
-import Exceptions.IllegalInputException;
+import Exceptions.AlertUserException;
 import Model.Product;
 import Model.command.AddProductCommand;
 import Model.command.Store;
+import Model.command.StoreCommand;
 import Model.observer.Customer;
 import View.AddProduct;
 import View.HomeScreen;
@@ -12,14 +13,22 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 
 public class ProductController extends BackButtonController {
-    private AddProduct addProductView;
-//    private StoreCommand storeCommand;
-    private Store store;
 
-    public ProductController(HomeScreen homeScreenView, Store store, AddProduct addProductView) {
+    private static final String EMPTY_SKU_FIELD = "Please fill in the SKU field";
+    private static final String RETAIL_PRICE_ERROR = "Please fill a legal retail price";
+    private static final String WHOLESALE_PRICE_ERROR = "Please fill a legal wholesale price";
+    private static final String PRODUCT_ADDED_SUCCESSFULLY = "Product Added!";
+    private static final String PRODUCT_REPLACED = "Product Replaced!";
+    private static final String NOTIFICATION_ERROR = "To receive notifications about promotions please enter a Customer";
+    private static final String CUSTOMER_NAME_ERROR = "Please fill a legal name";
+    private static final String PRICE_RGX = "[0-9]*";
+    private static final String CUSTOMER_NAME_RGX = "^[a-zA-Z\\s]+";
+
+    private final AddProduct addProductView;
+
+    public ProductController(HomeScreen homeScreenView, StoreCommand store, AddProduct addProductView) {
         super(homeScreenView, store, addProductView);
         this.addProductView = addProductView;
-        this.store = store;
 
         eventForOrderButton();
     }
@@ -34,41 +43,30 @@ public class ProductController extends BackButtonController {
 
                 try {
                     if (sku.isEmpty())
-                        throw new IllegalInputException("Please fill in the SKU field");
+                        throw new AlertUserException(EMPTY_SKU_FIELD);
 
                     String productName = addProductView.getProductName();
-                    String retailPrice = addProductView.getRetailPrice(); // to double
-                    String wholesalePrice = addProductView.getWholesalePrice(); // to double
-                    String customerName = addProductView.getCustomerName();
-                    String phoneNumber = addProductView.getPhoneNumber();
-                    boolean promNotification = addProductView.getPromotionNotification();
+                    String retailPrice = addProductView.getRetailPrice();
+                    String wholesalePrice = addProductView.getWholesalePrice();
 
                     int doubleRetailPrice = 0, doubleWholesalePrice = 0;
 
-                    if (promNotification && (phoneNumber.isEmpty() || customerName.isEmpty()))
-                        throw new IllegalInputException("To receive notifications about promotions please enter a Customer");
-
-                    if (!customerName.isEmpty() && !customerName.matches("^[a-zA-Z\\s]+"))
-                        throw new IllegalInputException("Please fill a legal name");
-
-                    if (!phoneNumber.isEmpty() && !phoneNumber.matches("(05[0-9]|0[12346789])([0-9]{7})"))
-                        throw new IllegalInputException("Please fill a legal israeli cell phone number without hyphens");
+                    Customer customer = getCustomer();
 
                     if (!retailPrice.isEmpty()) {
-                        if (!retailPrice.matches("[0-9]*"))
-                            throw new IllegalInputException("Please fill a legal retail price");
+                        if (!retailPrice.matches(PRICE_RGX))
+                            throw new AlertUserException(RETAIL_PRICE_ERROR);
                         else
                             doubleRetailPrice = Integer.parseInt(retailPrice);
                     }
 
                     if (!wholesalePrice.isEmpty()) {
-                        if (!wholesalePrice.matches("[0-9]*"))
-                            throw new IllegalInputException("Please fill a wholesale retail price");
+                        if (!wholesalePrice.matches(PRICE_RGX))
+                            throw new AlertUserException(WHOLESALE_PRICE_ERROR);
                         else
                             doubleWholesalePrice = Integer.parseInt(wholesalePrice);
                     }
 
-                    Customer customer = new Customer(customerName, phoneNumber, promNotification);
                     Product product = new Product(sku,
                             productName,
                             doubleRetailPrice,
@@ -78,29 +76,42 @@ public class ProductController extends BackButtonController {
                     AddProductCommand addProductCommand = new AddProductCommand(store, product);
                     addProductCommand.execute();
 
-//                    boolean renewProduct = storeCommand.addProductToStore(product);
                     boolean renewProduct = addProductCommand.isRenew();
 
                     StoreController.checkEnableCancelButton.run();
-                    // todo: Undo on replaced products ?
 
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     if (!renewProduct)
-                        alert.setContentText("Product Added!");
+                        alert.setContentText(PRODUCT_ADDED_SUCCESSFULLY);
                     else
-                        alert.setContentText("Product Replaced!");
+                        alert.setContentText(PRODUCT_REPLACED);
                     alert.showAndWait();
 
                     view.loadMain();
-                } catch (IllegalInputException i) {
+                } catch (AlertUserException i) {
                     i.showErrorMessage();
                 } catch (Exception e) {
                     alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Something went wrong");
+                    alert.setContentText("Unexpected error!");
                     alert.showAndWait();
                 }
             }
         };
         addProductView.eventOrderButton(eventForOrderButton);
+    }
+
+    private Customer getCustomer() throws AlertUserException {
+
+        String customerName = addProductView.getCustomerName();
+        String phoneNumber = addProductView.getPhoneNumber();
+        boolean promNotification = addProductView.getPromotionNotification();
+
+        if (promNotification && (phoneNumber.isEmpty() || customerName.isEmpty()))
+            throw new AlertUserException(NOTIFICATION_ERROR);
+
+        if (!customerName.isEmpty() && !customerName.matches(CUSTOMER_NAME_RGX))
+            throw new AlertUserException(CUSTOMER_NAME_ERROR);
+
+        return new Customer(customerName, phoneNumber, promNotification);
     }
 }

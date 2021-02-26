@@ -1,8 +1,8 @@
 package Model.command;
 
 public class RemoveProductCommand implements Command {
-    private StoreCommand storeCommand;
-    private String sku;
+    private final StoreCommand storeCommand;
+    private final String sku;
     private boolean isRemoved;
 
     public RemoveProductCommand(StoreCommand newStoreCommand, String sku) {

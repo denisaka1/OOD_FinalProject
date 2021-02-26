@@ -3,8 +3,8 @@ package Model.command;
 import Model.Product;
 
 public class AddProductCommand implements Command {
-    private StoreCommand storeCommand;
-    private Product product;
+    private final StoreCommand storeCommand;
+    private final Product product;
     private boolean renew;
 
     public AddProductCommand(StoreCommand storeCommand, Product product) {
@@ -15,7 +15,7 @@ public class AddProductCommand implements Command {
 
     @Override
     public void execute() {
-        storeCommand.addProduct(product);
+        renew = storeCommand.addProduct(product);
     }
 
     public boolean isRenew() {

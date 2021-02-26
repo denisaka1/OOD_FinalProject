@@ -1,7 +1,7 @@
 package Model.command;
 
 public class RemoveAllProductCommand implements Command {
-    private StoreCommand storeCommand;
+    private final StoreCommand storeCommand;
     private boolean allRemoved;
 
     public RemoveAllProductCommand(StoreCommand newStoreCommand) {

@@ -15,23 +15,35 @@ import javafx.stage.Stage;
 import static Model.command.Store.ASC;
 
 public class HomeScreen extends MainButtons {
+
+    public static final String CSS_FILES_PATH = "/Assets/";
+    public static final String CSS_FILENAME = "stylesheet.css";
+    public static final String CSS = HomeScreen.class.getResource(CSS_FILES_PATH + CSS_FILENAME).toExternalForm();
+
+    private static final String VIEW_TITLE = "Store";
+    private static final String ASC_TXT = "ASC";
+    private static final String DESC_TXT = "DESC";
+    private static final String INCOME_TXT = "Income";
+    private static final String DIALOG_BUTTON_TXT = "Choose";
+    private static final String DIALOG_VBOX_TXT = "Order Product By";
+
     public static final int WIDTH = 550;
     public static final int HEIGHT = 400;
     public static boolean ACTION_TAKEN = false;
     private Scene scene;
-    private BorderPane borderPane;
-    private Stage dialog, stage;
+    private final BorderPane borderPane;
+    private Stage dialog;
+    private final Stage stage;
     private VBox dialogVBox;
-    private ChoiceBox dialogCB;
+    private ChoiceBox<String> dialogCB;
     private Button dialogButton;
-    public static final String css = HomeScreen.class.getResource("/Assets/stylesheet.css").toExternalForm();
-
+//    public static final String css = HomeScreen.class.getResource("/Assets/stylesheet.css").toExternalForm();
 
     public HomeScreen(Stage stage) {
         super();
         this.stage = stage;
 
-        stage.setTitle("Store");
+        stage.setTitle(VIEW_TITLE);
         borderPane = new BorderPane();
         borderPane.setCenter(loadMainButtons());
 
@@ -40,7 +52,7 @@ public class HomeScreen extends MainButtons {
 
     public void loadMainProgram() {
         scene = new Scene(borderPane, WIDTH, HEIGHT);
-        scene.getStylesheets().add(css);
+        scene.getStylesheets().add(CSS);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -49,21 +61,21 @@ public class HomeScreen extends MainButtons {
     private void sortDialog() {
         dialog = new Stage();
 
-        dialogCB = new ChoiceBox();
-        dialogCB.getItems().addAll("ASC", "DESC", "Income");
+        dialogCB = new ChoiceBox<>();
+        dialogCB.getItems().addAll(ASC_TXT, DESC_TXT, INCOME_TXT);
         dialogCB.getSelectionModel().select(ASC);
 
-        dialogButton = new Button("Choose");
+        dialogButton = new Button(DIALOG_BUTTON_TXT);
         dialogButton.getStyleClass().add("button-order");
 
-        dialogVBox = new VBox(new Text("Order Product By"), dialogCB, dialogButton);
+        dialogVBox = new VBox(new Text(DIALOG_VBOX_TXT), dialogCB, dialogButton);
         VBox.setMargin(dialogCB, new Insets(10));
         VBox.setMargin(dialogButton, new Insets(5));
         dialogVBox.setAlignment(Pos.CENTER);
         dialogVBox.setPadding(new Insets(30));
 
         Scene dialogScene = new Scene(dialogVBox);
-        dialogScene.getStylesheets().add(css);
+        dialogScene.getStylesheets().add(CSS);
 
         dialog.setScene(dialogScene);
         dialog.setResizable(false);

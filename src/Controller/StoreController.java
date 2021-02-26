@@ -2,6 +2,7 @@ package Controller;
 
 import Model.command.SetOrderByCommand;
 import Model.command.Store;
+import Model.command.StoreCommand;
 import Model.command.UndoCommand;
 import View.*;
 import javafx.event.ActionEvent;
@@ -9,13 +10,15 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 
 public class StoreController {
-    protected Store store;
+    private static final String UNDO_SUCCESS = "Undo operation performed successfully!";
+
+    protected StoreCommand store;
     protected HomeScreen view;
     protected static Runnable checkEnableCancelButton;
     private boolean addedProduct;
     private Alert alert;
 
-    public StoreController(HomeScreen view, Store store) {
+    public StoreController(HomeScreen view, StoreCommand store) {
         this.view = view;
         this.store = store;
 
@@ -36,7 +39,6 @@ public class StoreController {
     private void eventOrderButton() {
         EventHandler<ActionEvent> eventForOrderButton = event -> {
             new SetOrderByCommand(store, view.getOrderChoice()).execute();
-//            storeCommand.saveProductByOrderInStore();
             view.closeDialog();
             view.loadMainProgram();
         };
@@ -54,12 +56,11 @@ public class StoreController {
 
     private void eventCancelButton() {
         EventHandler<ActionEvent> eventForCancelButton = event -> {
-//            storeCommand.undoStore();
             new UndoCommand(store).execute();
             disableCancelButton();
 
             alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Undo operation performed successfully!");
+            alert.setContentText(UNDO_SUCCESS);
             alert.showAndWait();
         };
 
@@ -71,7 +72,6 @@ public class StoreController {
             Sale saleView = new Sale();
             view.update(saleView);
             SaleController orderController = new SaleController(view, store, saleView);
-//            SaleController orderController = new SaleController(view, storeCommand, saleView);
         };
         view.addEventSaleButton(eventForSaleButton);
     }
@@ -81,7 +81,6 @@ public class StoreController {
             ProductList productList = new ProductList();
             view.update(productList);
             ProductListController productListController = new ProductListController(view, store, productList);
-//            ProductListController productListController = new ProductListController(view, storeCommand, productList);
         };
         view.addEventProductListButton(eventForProductListButton);
     }
