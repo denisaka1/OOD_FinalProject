@@ -5,12 +5,10 @@ import Model.command.GetAllConfirmedCustomerNamesCommand;
 import Model.command.SendSaleMessageCommand;
 import Model.command.StoreCommand;
 import View.HomeScreen;
-import View.MainButtons;
 import View.Sale;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 
@@ -22,9 +20,9 @@ public class SaleController extends BackButtonController {
     private static Runnable checkEnableSendButton;
     private boolean sending;
     private final Sale saleView;
-    private Thread loadingThread;
+    private Thread loadingThread, sendingThread;
     private boolean shuttingDown;
-    private int status = 0, nameCounter = 0;
+    private int status, nameCounter;
 
     public SaleController(HomeScreen homeScreenView, StoreCommand store, Sale saleView) {
         super(homeScreenView, store, saleView);
@@ -44,6 +42,9 @@ public class SaleController extends BackButtonController {
 
                 new SendSaleMessageCommand(store, saleView.getMsg()).execute();
 
+                nameCounter = 0;
+                shuttingDown = false;
+
                 disableSendButton();
                 saleView.clearResponsesArea();
 
@@ -56,27 +57,31 @@ public class SaleController extends BackButtonController {
                 if (names.size() > 0)
                     loadingBar();
 
-                new Thread(() -> {
+                sendingThread = new Thread(() -> {
                     for (String name : names) {
                         Platform.runLater(() -> {
                             saleView.addResponse(name + ACCEPT_RESPONSE, status);
 
                             nameCounter++;
+                            System.out.println( names.size());
                             if (nameCounter >= names.size()) {
                                 shuttingDown = true;
                                 loadingThread.interrupt();
+                                sendingThread.interrupt();
                                 saleView.loadingBar(-1);
                                 enableSendButton();
                             }
                         });
 
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                            sendingThread.interrupt();
                         }
                     }
-                }).start();
+                });
+                sendingThread.start();
+
             } catch (AlertUserException i) {
                 i.showErrorMessage();
             }
@@ -85,6 +90,8 @@ public class SaleController extends BackButtonController {
     }
 
     private void loadingBar() {
+        status = 0;
+
         loadingThread = new Thread(() -> {
             while (!shuttingDown && !Thread.interrupted()) {
                 Platform.runLater(() -> {
@@ -109,7 +116,8 @@ public class SaleController extends BackButtonController {
     private void enableSendButton() {
         if (!sending) {
             saleView.getSendingButton().setDisable(false);
-            saleView.getSendingButton().getStyleClass().add("enable");
+            saleView.getSendingButton().getStyleClass().remove("disable");
+            saleView.getSendingButton().getStyleClass().addAll("enable");
             sending = true;
         }
     }
@@ -117,7 +125,8 @@ public class SaleController extends BackButtonController {
     private void disableSendButton() {
         sending = false;
         saleView.getSendingButton().setDisable(true);
-        saleView.getSendingButton().getStyleClass().add("disable");
+        saleView.getSendingButton().getStyleClass().remove("enable");
+        saleView.getSendingButton().getStyleClass().addAll("disable");
     }
 
 }

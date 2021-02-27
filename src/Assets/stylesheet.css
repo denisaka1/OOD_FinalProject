@@ -61,6 +61,7 @@
 }
 
 .button-send {
+    -fx-text-alignment: center;
     -fx-padding: 0;
     -fx-text-fill: #fff;
     -fx-border: #77b550;

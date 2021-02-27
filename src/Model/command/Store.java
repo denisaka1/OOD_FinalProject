@@ -98,6 +98,8 @@ public class Store implements StoreCommand {
     public void sendSaleMessage(String msg) {
         Customer customer;
 
+        names.clear();
+
         for(Product product : allProducts.values()){
             customer = product.getCustomer();
             if(customer.getEventOnSales()) {
