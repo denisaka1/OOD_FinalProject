@@ -5,10 +5,13 @@ import Model.command.GetAllConfirmedCustomerNamesCommand;
 import Model.command.SendSaleMessageCommand;
 import Model.command.StoreCommand;
 import View.HomeScreen;
+import View.MainButtons;
 import View.Sale;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+
 import java.util.ArrayList;
 
 public class SaleController extends BackButtonController {
@@ -16,6 +19,8 @@ public class SaleController extends BackButtonController {
     private static final String SEND_RESPONSE = "Sending Messages:";
     private static final String ACCEPT_RESPONSE = " Accepted";
 
+    private static Runnable checkEnableSendButton;
+    private boolean sending;
     private final Sale saleView;
     private Thread loadingThread;
     private boolean shuttingDown;
@@ -25,6 +30,8 @@ public class SaleController extends BackButtonController {
         super(homeScreenView, store, saleView);
         this.saleView = saleView;
         eventSendButton();
+
+        checkEnableSendButton = this::enableSendButton;
     }
 
     private void eventSendButton() {
@@ -36,6 +43,9 @@ public class SaleController extends BackButtonController {
                     throw new AlertUserException(FILL_MSG_BOX);
 
                 new SendSaleMessageCommand(store, saleView.getMsg()).execute();
+
+                disableSendButton();
+                saleView.clearResponsesArea();
 
                 GetAllConfirmedCustomerNamesCommand confirmedCommand = new GetAllConfirmedCustomerNamesCommand(store);
                 confirmedCommand.execute();
@@ -56,7 +66,7 @@ public class SaleController extends BackButtonController {
                                 shuttingDown = true;
                                 loadingThread.interrupt();
                                 saleView.loadingBar(-1);
-                                Thread.currentThread().interrupt();
+                                enableSendButton();
                             }
                         });
 
@@ -95,5 +105,20 @@ public class SaleController extends BackButtonController {
 
         loadingThread.start();
     }
+
+    private void enableSendButton() {
+        if (!sending) {
+            saleView.getSendingButton().setDisable(false);
+            saleView.getSendingButton().getStyleClass().add("enable");
+            sending = true;
+        }
+    }
+
+    private void disableSendButton() {
+        sending = false;
+        saleView.getSendingButton().setDisable(true);
+        saleView.getSendingButton().getStyleClass().add("disable");
+    }
+
 }
 

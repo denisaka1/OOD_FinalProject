@@ -103,6 +103,15 @@ public class Sale extends BackButtonView {
         }
     }
 
+    public Button getSendingButton() {
+        return sendButton;
+    }
+
+    public void clearResponsesArea() {
+        responseTest = "";
+        responsesTA.clear();
+    }
+
     @Override
     public VBox update() {
         mainView.getChildren().clear();
