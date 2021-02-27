@@ -122,7 +122,6 @@ public class ProductList extends BackButtonView {
         centerColumn(cusPromotions);
 
         // Values
-        // todo: productName doesn't show up
         prodSku             .setCellValueFactory(new PropertyValueFactory<>("sku"));
         prodName            .setCellValueFactory(new PropertyValueFactory<>("productName"));
         prodRetailPrice     .setCellValueFactory(new PropertyValueFactory<>("retailPrice"));
