@@ -21,8 +21,10 @@ public class ProductController extends BackButtonController {
     private static final String PRODUCT_REPLACED = "Product Replaced!";
     private static final String NOTIFICATION_ERROR = "To receive notifications about promotions please enter a Customer";
     private static final String CUSTOMER_NAME_ERROR = "Please fill a legal name";
+    private static final String PHONE_ERROR = "Please fill a legal Israeli phone number";
     private static final String PRICE_RGX = "[0-9]*";
     private static final String CUSTOMER_NAME_RGX = "^[a-zA-Z\\s]+";
+    private static final String PHONE_RGX = "(05[0-9]|0[12346789])([0-9]{7})";
 
     private final AddProduct addProductView;
 
@@ -111,6 +113,9 @@ public class ProductController extends BackButtonController {
 
         if (!customerName.isEmpty() && !customerName.matches(CUSTOMER_NAME_RGX))
             throw new AlertUserException(CUSTOMER_NAME_ERROR);
+
+        if (!phoneNumber.matches(PHONE_RGX))
+            throw new AlertUserException(PHONE_ERROR);
 
         return new Customer(customerName, phoneNumber, promNotification);
     }

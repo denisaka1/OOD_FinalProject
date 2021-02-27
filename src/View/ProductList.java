@@ -100,7 +100,6 @@ public class ProductList extends BackButtonView {
         TableColumn<Product, String> customer           = new TableColumn<>(TableColumns.CUSTOMER.toString());
         TableColumn<Product, String> prodSku            = new TableColumn<>(TableColumns.SKU.toString());
         TableColumn<Product, String> prodName           = new TableColumn<>(TableColumns.NAME.toString());
-//        TableColumn<Product, String> prodName           = new TableColumn<>("name");
         TableColumn<Product, String> prodRetailPrice    = new TableColumn<>(TableColumns.RETAIL.toString());
         TableColumn<Product, String> prodWholesalePrice = new TableColumn<>(TableColumns.WHOLESALE.toString());
         TableColumn<Product, String> cusName            = new TableColumn<>(TableColumns.NAME.toString());

@@ -34,6 +34,10 @@ public class Product implements Serializable {
         return sku;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
     public int getRetailPrice() {
         return retailPrice;
     }
